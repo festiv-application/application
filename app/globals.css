@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --lavender: #FAFAF8;
+  --purple-dark: #2A1758;
+  --accent: #FFD166;
+  --text-white: #FFFFFF;
+  --text-muted: rgba(255,255,255,0.65);
+  --text-muted-dark: rgba(42,23,88,0.6);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--lavender);
+  color: var(--purple-dark);
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+}
+
+@keyframes shooting-star {
+  0%   { transform: translateX(calc(-50% - 25vw)) rotate(0deg); opacity: 0; }
+  8%   { opacity: 1; }
+  72%  { transform: translateX(-50%) rotate(0deg); }
+  84%  { transform: translateX(-50%) rotate(0deg) scale(0.9); }
+  100% { transform: translateX(-50%) rotate(14deg) scale(1); opacity: 0.9; }
+}
+
+@keyframes shooting-star-tail {
+  0%   { opacity: 0; width: 2em; }
+  12%  { opacity: 0.85; width: 6em; }
+  45%  { opacity: 0.9; width: 10em; }
+  68%  { opacity: 0.6; width: 8em; }
+  76%  { opacity: 0; width: 4em; }
+  100% { opacity: 0; width: 0; }
+}
+
+@keyframes star-breathe {
+  0%, 100% { opacity: 0.15; transform: scale(0.75); }
+  50%      { opacity: 0.9; transform: scale(1.2); }
+}
