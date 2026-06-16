@@ -15,6 +15,8 @@ const translations = {
     download: "Download de app",
     signup: "Aanmelden",
     subtitle: "Om mooie dagen nóg mooier te maken",
+    tagline1: "De dating app",
+    tagline2: "om mooie dagen nóg mooier te maken.",
     scroll: "SCROLL",
     line1: "Ga je naar een festival of event?",
     line2: "Match vooraf of ter plekke met mensen die ook gaan.",
@@ -64,6 +66,8 @@ const translations = {
     download: "Download the app",
     signup: "Sign up",
     subtitle: "To make great days even greater",
+    tagline1: "The dating app",
+    tagline2: "to make great days even greater.",
     scroll: "SCROLL",
     line1: "Going to a festival or event?",
     line2: "Match beforehand or on the spot with people who are also going.",
@@ -189,17 +193,27 @@ const INTRO_STARS = [
   { top: "5%", left: "60%", size: 2, delay: 0.45, dur: 3.0 },
 ];
 
-// Modulevariabele i.p.v. sessionStorage: reset bij een echte page reload (refresh), maar blijft
-// staan bij client-side navigatie binnen de app (bv. terug naar "/" via het Festiv-logo).
-let introHasPlayedThisSession = false;
+// We gebruiken sessionStorage (blijft staan bij client-side navigatie, bv. terug naar "/"
+// via het Festiv-logo). De reload-check hieronder staat bewust op module-niveau, dus hij
+// draait precies ÉÉN keer per echte page load — niet opnieuw bij elke keer dat het
+// Home-component zelf (opnieuw) mount door client-side navigatie. Zou hij wél bij elke
+// mount opnieuw draaien, dan blijft performance.getEntriesByType("navigation") namelijk
+// altijd hetzelfde (eerste) navigatietype van de hele tab teruggeven, ook na talloze
+// SPA-navigaties — en zou een sessie die ooit met een refresh begon de intro voor altijd
+// blijven herhalen.
+const INTRO_FLAG = "festivIntroPlayed";
 
-const PROFILES = [
-  { name: "Mia, 24", festival: "Lowlands", photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80" },
-  { name: "Sara, 22", festival: "DGTL", photo: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&q=80" },
-  { name: "Lena, 26", festival: "Awakenings", photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&q=80" },
-  { name: "Julia, 25", festival: "Dekmantel", photo: "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&q=80" },
-  { name: "Noor, 23", festival: "Mysteryland", photo: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80" },
-];
+if (typeof window !== "undefined") {
+  const navEntry = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;
+  if (navEntry?.type === "reload") {
+    sessionStorage.removeItem(INTRO_FLAG);
+  }
+}
+
+function hasIntroPlayedThisSession(): boolean {
+  if (typeof window === "undefined") return false;
+  return sessionStorage.getItem(INTRO_FLAG) === "1";
+}
 
 export default function Home() {
   const { lang, toggle } = useLang();
@@ -227,17 +241,17 @@ export default function Home() {
 
   // Pas na hydration checken (window bestaat niet op de server), zodat de eerste render altijd matcht.
   useLayoutEffect(() => {
-    if (introHasPlayedThisSession) {
+    if (hasIntroPlayedThisSession()) {
       setIntroAlreadyPlayed(true);
       setIntroDone(true);
       setHeroIn(true);
     }
+    // De hoofdpagina heeft geen navigatiebalk met het gele bolletje. Reset de onthouden
+    // positie zodat het bolletje, als je via deze pagina weer naar een subpagina gaat,
+    // niet meer vanaf de vorige subpagina animeert maar gewoon direct op de juiste plek
+    // verschijnt.
+    if (typeof window !== "undefined") sessionStorage.removeItem("navDotLeft");
   }, []);
-  const [profile, setProfile] = useState(PROFILES[0]);
-  useEffect(() => {
-    setProfile(PROFILES[Math.floor(Math.random() * PROFILES.length)]);
-  }, []);
-
   // Scroll blokkeren zolang de intro speelt, zodat je niet "stiekem" al gescrolld bent
   // zodra de animatie klaar is.
   useEffect(() => {
@@ -272,7 +286,7 @@ export default function Home() {
     const t2 = setTimeout(() => setShowSubtitle(true), 1200);
     const t3 = setTimeout(() => setIntroWipe(true), 2400);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, []);
+  }, [introAlreadyPlayed]);
 
   useEffect(() => {
     setInnerHeight(window.innerHeight);
@@ -360,7 +374,7 @@ export default function Home() {
             transform: introWipe ? "translateY(-100%)" : "translateY(0)",
             transition: "transform 0.9s cubic-bezier(0.76,0,0.24,1)",
           }}
-          onTransitionEnd={() => { if (introWipe) { setIntroDone(true); introHasPlayedThisSession = true; } }}>
+          onTransitionEnd={() => { if (introWipe) { setIntroDone(true); sessionStorage.setItem(INTRO_FLAG, "1"); } }}>
             {/* Sterren — kleine witte stippen die ademen */}
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
               {INTRO_STARS.map((s, i) => (
@@ -614,9 +628,9 @@ export default function Home() {
                   lineHeight: 1.2,
                   letterSpacing: "-0.5px",
                 }}>
-                  De dating app
+                  {txt.tagline1}
                   <br />
-                  om mooie dagen nóg mooier te maken.
+                  {txt.tagline2}
                   <sup style={{
                     fontSize: "0.28em",
                     fontWeight: 700,
@@ -628,15 +642,23 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Vak 2: getekend pijltje — tussen de tekst en de telefoon */}
+              {/* Vak 2: getekend pijltje — vlak onder/naast de tekst */}
               <div style={{
                 position: "absolute",
-                top: "440px",
-                left: "640px",
+                top: "400px",
+                left: "520px",
                 opacity: heroIn ? 1 : 0,
                 transition: "opacity 0.4s ease 0.6s",
               }}>
                 <svg width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    {/* Lichte turbulentie + verplaatsing op de lijnen, voor een krijt/potlood-achtige, niet-perfecte streek */}
+                    <filter id="chalk-arrow" x="-30%" y="-30%" width="160%" height="160%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.06 0.18" numOctaves="2" seed="4" result="noise" />
+                      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" xChannelSelector="R" yChannelSelector="G" />
+                    </filter>
+                  </defs>
+                  <g filter="url(#chalk-arrow)">
                   {/* Lichte tweede lijn iets verschoven, voor een handgetekend effect */}
                   <path
                     d="M6 12 C 50 4, 90 60, 150 56 C 168 54.5, 184 48, 198 40"
@@ -681,10 +703,11 @@ export default function Home() {
                       transition: "stroke-dashoffset 0.35s ease 1.8s",
                     }}
                   />
+                  </g>
                 </svg>
               </div>
 
-              {/* Vak 3: telefoon met app, zelfde ontwerp als de oorspronkelijke hero-telefoon */}
+              {/* Vak 3: festivalfoto i.p.v. telefoon-mockup */}
               <div style={{
                 position: "absolute",
                 top: "50%",
@@ -693,27 +716,8 @@ export default function Home() {
                 transform: heroIn ? "translateY(-50%)" : "translateY(-30%)",
                 transition: "opacity 0.9s ease 0.3s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s",
               }}>
-                <div style={{ width: "220px", height: "460px", borderRadius: "46px", background: "#0A1520", boxShadow: "0 60px 120px rgba(10,21,32,0.55), 0 0 0 9px #0A1520, 0 0 0 11px #2A1758", position: "relative", overflow: "hidden" }}>
-                  <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: "88px", height: "26px", background: "#0A1520", borderRadius: "0 0 18px 18px", zIndex: 10 }} />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, #12202E 0%, #2A1758 60%, #0E1B27 100%)", overflow: "hidden" }}>
-                    <div style={{ paddingTop: "38px", paddingBottom: "8px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                      <span style={{ fontFamily: "'Playfair Display', serif", fontSize: "20px", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.5px" }}>
-                        Fest<span style={{ position: "relative", display: "inline-block" }}>&#x131;<span style={{ position: "absolute", top: "0.6em", left: "55%", fontSize: "0.18em", color: "#FFD166", transform: "translateX(-50%) rotate(12deg)" }}>★</span></span>v
-                      </span>
-                    </div>
-                    <div style={{ margin: "10px 10px 0", borderRadius: "20px", overflow: "hidden", height: "268px", position: "relative" }}>
-                      <img src={profile.photo} alt={profile.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
-                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "60px 16px 18px", background: "linear-gradient(to top, rgba(10,21,32,0.92) 0%, transparent 100%)" }}>
-                        <div style={{ color: "#FFFFFF", fontSize: "19px", fontWeight: 700, fontFamily: "'Poppins', sans-serif" }}>{profile.name}</div>
-                        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px", marginTop: "3px", fontFamily: "'Inter', sans-serif" }}>{lang === "nl" ? "Gaat ook naar" : "Also going to"} <span style={{ color: "#FFD166", fontWeight: 700 }}>{profile.festival}</span></div>
-                      </div>
-                      <div style={{ position: "absolute", top: "12px", left: "12px", background: "#FFD166", borderRadius: "20px", padding: "4px 10px", fontSize: "10px", fontWeight: 800, color: "#2A1758", fontFamily: "'Inter', sans-serif", letterSpacing: "0.5px" }}>MATCH</div>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "center", gap: "22px", paddingTop: "14px" }}>
-                      <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: "1.5px solid rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", color: "rgba(255,255,255,0.5)" }}>✕</div>
-                      <div style={{ width: "46px", height: "46px", borderRadius: "50%", background: "#FFD166", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px" }}>♥</div>
-                    </div>
-                  </div>
+                <div style={{ width: "340px", height: "460px", borderRadius: "28px", overflow: "hidden", boxShadow: "0 60px 120px rgba(10,21,32,0.35)" }}>
+                  <img src="/festival-crowd.png" alt="Festivalpubliek" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               </div>
 

@@ -88,25 +88,38 @@ export default function Nav() {
     const elRect = el.getBoundingClientRect();
     const navRect = nav.getBoundingClientRect();
     const left = elRect.left - navRect.left + elRect.width / 2;
+
     if (isFirstRender.current) {
+      // Belangrijk: hier ALLEEN lezen, nog niet schrijven naar sessionStorage. Als dit
+      // effect dubbel draait (React Strict Mode in dev doet dat bij elke mount), zou een
+      // voortijdige write hier de tweede run zijn eigen toekomstige waarde laten terugzien
+      // -> start- en eindpositie worden gelijk -> geen zichtbare animatie meer.
       const stored = typeof window !== "undefined" ? sessionStorage.getItem("navDotLeft") : null;
       const startLeft = stored ? parseFloat(stored) : left;
-      // Place dot at start position instantly (no transition), fully visible
+      // Bolletje meteen (zonder transitie) op de startpositie zetten, zichtbaar.
       setTransitioning(false);
       setDotLeft(startLeft);
       setDotVisible(true);
-      // Eerst de subpagina volledig laten verschijnen, dan pas (vertraagd) naar de
-      // nieuwe knop schuiven — geen instant "schieten" naar de eindpositie.
-      setTimeout(() => {
+
+      // Eerst de subpagina volledig laten renderen, dan pas (duidelijk vertraagd en traag)
+      // naar de nieuwe knop schuiven — en pas DAN de nieuwe positie opslaan en isFirstRender
+      // omzetten. Zo blijft een eventuele dubbele effect-run (React Strict Mode in dev)
+      // volledig idempotent: de cleanup hieronder annuleert de eerste timer voordat hij ooit
+      // iets geschreven heeft, en de tweede run leest exact dezelfde (nog onaangetaste) oude
+      // waarde uit sessionStorage.
+      const timer = setTimeout(() => {
         setTransitioning(true);
         setDotLeft(left);
+        if (typeof window !== "undefined") sessionStorage.setItem("navDotLeft", String(left));
         isFirstRender.current = false;
-      }, 250);
-    } else {
-      setTransitioning(true);
-      setDotLeft(left);
-      setDotVisible(true);
+      }, 300);
+
+      return () => clearTimeout(timer);
     }
+
+    setTransitioning(true);
+    setDotLeft(left);
+    setDotVisible(true);
     if (typeof window !== "undefined") sessionStorage.setItem("navDotLeft", String(left));
   }, [activeKey, pathname]);
 
@@ -153,7 +166,7 @@ export default function Nav() {
           borderRadius: "50%",
           background: "#FFD166",
           opacity: 1,
-          transition: transitioning ? "left 0.7s cubic-bezier(0.4,0,0.2,1)" : "none",
+          transition: transitioning ? "left 0.8s cubic-bezier(0.65,0,0.35,1)" : "none",
           pointerEvents: "none",
           zIndex: 10,
         }} />
