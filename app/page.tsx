@@ -18,9 +18,10 @@ const translations = {
     tagline1: "De dating app",
     tagline2: "om mooie dagen nóg mooier te maken.",
     scroll: "SCROLL",
-    line1: "Ga je naar een festival of event?",
-    line2: "Match vooraf of ter plekke met mensen die ook gaan.",
-    line3: "En maak een mooie dag nóg mooier.",
+    line1: "Ga je naar een festival of een event?",
+    line2: "Match vooraf met mensen die ook gaan.",
+    line3: "Ontmoet elkaar bij een stage, of ergens waar je lekker kunt zitten.",
+    line4: "En maak een geweldige dag nóg mooier.",
     howTitle: "Zo werkt het",
     steps: [
       { title: "Kies je evenementen", desc: "Voeg de feesten en festivals toe waar jij naartoe gaat." },
@@ -69,9 +70,10 @@ const translations = {
     tagline1: "The dating app",
     tagline2: "to make great days even greater.",
     scroll: "SCROLL",
-    line1: "Going to a festival or event?",
-    line2: "Match beforehand or on the spot with people who are also going.",
-    line3: "And make a great day even greater.",
+    line1: "Going to a festival or an event?",
+    line2: "Match beforehand with people who are also going.",
+    line3: "Meet up at a stage, or wherever you like to sit back.",
+    line4: "And make a great day even greater.",
     howTitle: "How it works",
     steps: [
       { title: "Choose your events", desc: "Add the parties and festivals you're going to." },
@@ -731,38 +733,57 @@ export default function Home() {
             background: "#2A1758",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            padding: "60px 24px",
+            justifyContent: "space-between",
+            gap: "60px",
+            padding: "60px 80px",
             zIndex: 20,
             transform: `translateY(${(1 - bufferProgress) * 100}%)`,
             pointerEvents: bufferProgress >= 1 ? "auto" : "none",
           }}>
-            <div style={{ maxWidth: "1200px", textAlign: "center" }}>
+            <div style={{
+              width: "360px",
+              height: "440px",
+              flexShrink: 0,
+              borderRadius: "24px",
+              overflow: "hidden",
+              opacity: visible.has("tekst") ? 1 : 0,
+              transform: visible.has("tekst") ? "translateY(0)" : "translateY(20px)",
+              transition: "opacity 0.8s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1)",
+              boxShadow: "0 40px 80px rgba(0,0,0,0.25)",
+            }}>
+              <img src="/festival-couple.png" alt="Stel op een festival" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+
+            <div style={{ maxWidth: "660px" }}>
               <p style={{
                 fontFamily: "'Poppins', sans-serif",
-                fontSize: "clamp(22px, 2.2vw, 34px)",
+                fontSize: "clamp(21px, 2.1vw, 25px)",
                 fontWeight: 300,
                 color: "#FFFFFF",
-                lineHeight: 1.7,
+                lineHeight: 1.6,
+                textAlign: "left",
+                margin: 0,
               }}>
                 {[
                   { text: txt.line1, delay: 0 },
-                  { text: txt.line2, delay: 0.45, break: true },
-                  { text: txt.line3, delay: 0.9, break: true },
-                ].map(({ text, delay, break: lineBreak }, i) => [
-                  lineBreak ? <span key={`br-${i}`} style={{ display: "block", height: "2em" }} /> : null,
-                  ...text.split(" ").map((word, wi) => (
-                    <span key={`${i}-${wi}`} style={{
-                      display: "inline-block",
-                      opacity: visible.has("tekst") ? 1 : 0,
-                      transform: visible.has("tekst") ? "translateY(0px)" : "translateY(16px)",
-                      transition: `opacity 0.7s ease ${delay}s, transform 1s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-                      marginRight: "0.28em",
-                    }}>
-                      {word}
-                    </span>
-                  )),
-                ])}
+                  { text: txt.line2, delay: 0.15 },
+                  { text: txt.line3, delay: 0.3 },
+                  { text: txt.line4, delay: 0.45 },
+                ].map(({ text, delay }, i) => (
+                  <span key={i}>
+                    {text.split(" ").map((word, wi) => (
+                      <span key={wi} style={{
+                        display: "inline-block",
+                        opacity: visible.has("tekst") ? 1 : 0,
+                        transform: visible.has("tekst") ? "translateY(0px)" : "translateY(10px)",
+                        transition: `opacity 0.6s ease ${delay}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+                        marginRight: "0.28em",
+                      }}>
+                        {word}
+                      </span>
+                    ))}
+                  </span>
+                ))}
               </p>
             </div>
           </div>
