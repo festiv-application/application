@@ -20,8 +20,7 @@ const translations = {
     scroll: "SCROLL",
     line1: "Ga je naar een festival of een event?",
     line2: "Match vooraf met mensen die ook gaan.",
-    line3: "Ontmoet elkaar bij een stage, of ergens waar je lekker kunt zitten.",
-    line4: "En maak een geweldige dag nóg mooier.",
+    line3: "En maak een mooie dag nóg mooier.",
     howTitle: "Zo werkt het",
     steps: [
       { title: "Kies je evenementen", desc: "Voeg de feesten en festivals toe waar jij naartoe gaat." },
@@ -72,8 +71,7 @@ const translations = {
     scroll: "SCROLL",
     line1: "Going to a festival or an event?",
     line2: "Match beforehand with people who are also going.",
-    line3: "Meet up at a stage, or wherever you like to sit back.",
-    line4: "And make a great day even greater.",
+    line3: "And make a beautiful day even more beautiful.",
     howTitle: "How it works",
     steps: [
       { title: "Choose your events", desc: "Add the parties and festivals you're going to." },
@@ -286,7 +284,7 @@ export default function Home() {
     // introDone wordt gezet via onTransitionEnd op de wipe-achtergrond, exact synchroon met de animatie.
     const t1 = setTimeout(() => setShowTitle(true), 150);
     const t2 = setTimeout(() => setShowSubtitle(true), 1200);
-    const t3 = setTimeout(() => setIntroWipe(true), 2400);
+    const t3 = setTimeout(() => setIntroWipe(true), 1900);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [introAlreadyPlayed]);
 
@@ -328,6 +326,7 @@ export default function Home() {
   useEffect(() => {
     if (bufferProgress >= 0.8) setVisible(prev => prev.has("tekst") ? prev : new Set([...prev, "tekst"]));
   }, [bufferProgress]);
+
 
 
   const slideIn = (id: string, delay = 0) => ({
@@ -615,8 +614,8 @@ export default function Home() {
               {/* Vak 1: tagline met TM */}
               <div style={{
                 position: "absolute",
-                top: "300px",
-                left: 0,
+                top: "340px",
+                left: "-160px",
                 maxWidth: "760px",
                 opacity: heroIn ? 1 : 0,
                 transform: heroIn ? "translateY(0)" : "translateY(20px)",
@@ -647,10 +646,10 @@ export default function Home() {
               {/* Vak 2: getekend pijltje — vlak onder/naast de tekst */}
               <div style={{
                 position: "absolute",
-                top: "400px",
-                left: "520px",
+                top: "440px",
+                left: "420px",
                 opacity: heroIn ? 1 : 0,
-                transition: "opacity 0.4s ease 0.6s",
+                transition: "opacity 0.4s ease 0.2s",
               }}>
                 <svg width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
@@ -718,7 +717,7 @@ export default function Home() {
                 transform: heroIn ? "translateY(-50%)" : "translateY(-30%)",
                 transition: "opacity 0.9s ease 0.3s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s",
               }}>
-                <div style={{ width: "340px", height: "460px", borderRadius: "28px", overflow: "hidden", boxShadow: "0 60px 120px rgba(10,21,32,0.35)" }}>
+                <div style={{ width: "390px", height: "520px", borderRadius: "28px", overflow: "hidden", boxShadow: "0 60px 120px rgba(10,21,32,0.35)" }}>
                   <img src="/festival-crowd.png" alt="Festivalpubliek" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               </div>
@@ -734,15 +733,15 @@ export default function Home() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: "60px",
-            padding: "60px 80px",
+            gap: "20px",
+            padding: "60px 80px 60px 180px",
             zIndex: 20,
             transform: `translateY(${(1 - bufferProgress) * 100}%)`,
             pointerEvents: bufferProgress >= 1 ? "auto" : "none",
           }}>
             <div style={{
-              width: "360px",
-              height: "440px",
+              width: "520px",
+              height: "600px",
               flexShrink: 0,
               borderRadius: "24px",
               overflow: "hidden",
@@ -754,10 +753,23 @@ export default function Home() {
               <img src="/festival-couple.png" alt="Stel op een festival" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
 
-            <div style={{ maxWidth: "660px" }}>
+            <div style={{ maxWidth: "500px", paddingTop: "0px" }}>
+              <p style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "19px",
+                fontWeight: 700,
+                letterSpacing: "2.5px",
+                color: "#FFD166",
+                textTransform: "uppercase" as const,
+                margin: "0 0 18px 0",
+                opacity: visible.has("tekst") ? 1 : 0,
+                transition: "opacity 0.6s ease 0s",
+              }}>
+                De visie
+              </p>
               <p style={{
                 fontFamily: "'Poppins', sans-serif",
-                fontSize: "clamp(21px, 2.1vw, 25px)",
+                fontSize: "clamp(19px, 1.9vw, 23px)",
                 fontWeight: 300,
                 color: "#FFFFFF",
                 lineHeight: 1.6,
@@ -768,7 +780,6 @@ export default function Home() {
                   { text: txt.line1, delay: 0 },
                   { text: txt.line2, delay: 0.15 },
                   { text: txt.line3, delay: 0.3 },
-                  { text: txt.line4, delay: 0.45 },
                 ].map(({ text, delay }, i) => (
                   <span key={i}>
                     {text.split(" ").map((word, wi) => (
@@ -887,9 +898,9 @@ export default function Home() {
                 }}
               >
                 <img
-                  src="https://d8j0ntlcm91z4.cloudfront.net/user_3ExTTLcL3m5TLSO62v2S7UnqJO0/hf_20260612_195953_2b4071f6-0345-4662-977c-c98ce9f9b859_min.webp"
-                  alt="Fabian lacht"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
+                  src="/fabian.png"
+                  alt="Fabian"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 25%" }}
                 />
                 <div style={{
                   position: "absolute",
