@@ -632,7 +632,7 @@ export default function Home() {
               <div style={{
                 position: "absolute",
                 top: "340px",
-                left: "-160px",
+                left: "-60px",
                 maxWidth: "760px",
                 opacity: heroIn ? 1 : 0,
                 transform: heroIn ? "translateY(0)" : "translateY(20px)",
@@ -664,7 +664,7 @@ export default function Home() {
               <div style={{
                 position: "absolute",
                 top: "440px",
-                left: "420px",
+                left: "520px",
                 opacity: heroIn ? 1 : 0,
                 transition: "opacity 0.4s ease 0.2s",
               }}>
@@ -773,23 +773,23 @@ export default function Home() {
             <div style={{ maxWidth: "500px", paddingTop: "0px" }}>
               <p style={{
                 fontFamily: "'Playfair Display', serif",
-                fontSize: "19px",
+                fontSize: "clamp(28px, 2.8vw, 38px)",
                 fontWeight: 700,
-                letterSpacing: "2.5px",
-                color: "#FFD166",
-                textTransform: "uppercase" as const,
-                margin: "0 0 18px 0",
+                letterSpacing: "-0.5px",
+                color: "#FFFFFF",
+                lineHeight: 1.2,
+                margin: "0 0 24px 0",
                 opacity: visible.has("tekst") ? 1 : 0,
                 transition: "opacity 0.6s ease 0s",
               }}>
-                De visie
+                Je volgende date staat al op de gastenlijst.
               </p>
               <p style={{
                 fontFamily: "'Poppins', sans-serif",
-                fontSize: "clamp(19px, 1.9vw, 23px)",
+                fontSize: "clamp(14px, 1.4vw, 17px)",
                 fontWeight: 300,
-                color: "#FFFFFF",
-                lineHeight: 1.6,
+                color: "rgba(255,255,255,0.7)",
+                lineHeight: 1.7,
                 textAlign: "left",
                 margin: 0,
               }}>
