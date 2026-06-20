@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const confirmationEmail = (email: string) => `
 <!DOCTYPE html>
@@ -21,7 +21,7 @@ const confirmationEmail = (email: string) => `
           <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:32px;">
-              <span style="font-family:Georgia,serif;font-size:42px;font-weight:800;color:#2A1758;letter-spacing:-1px;">
+              <span style="font-family:Georgia,serif;font-size:42px;font-weight:800;color:#2160D8;letter-spacing:-1px;">
                 Festiv
               </span>
             </td>
@@ -29,13 +29,13 @@ const confirmationEmail = (email: string) => `
 
           <!-- Card -->
           <tr>
-            <td style="background:#2A1758;border-radius:24px;padding:48px 48px 40px;">
+            <td style="background:#2160D8;border-radius:24px;padding:48px 48px 40px;">
 
               <!-- Ster -->
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding-bottom:28px;">
-                    <div style="width:60px;height:60px;background:#FFD166;border-radius:50%;text-align:center;line-height:60px;font-size:26px;">
+                    <div style="width:60px;height:60px;background:#FBC02D;border-radius:50%;text-align:center;line-height:60px;font-size:26px;">
                       ★
                     </div>
                   </td>
@@ -75,7 +75,7 @@ const confirmationEmail = (email: string) => `
                     <p style="margin:0 0 4px;font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6;">
                       Met liefde,
                     </p>
-                    <p style="margin:0;font-size:17px;font-weight:700;color:#FFD166;letter-spacing:-0.3px;">
+                    <p style="margin:0;font-size:17px;font-weight:700;color:#FBC02D;letter-spacing:-0.3px;">
                       Mark &amp; Gijs
                     </p>
                     <p style="margin:4px 0 0;font-size:14px;color:rgba(255,255,255,0.4);">
@@ -90,7 +90,7 @@ const confirmationEmail = (email: string) => `
           <!-- Footer -->
           <tr>
             <td align="center" style="padding-top:28px;">
-              <p style="margin:0;font-size:13px;color:rgba(42,23,88,0.4);line-height:1.6;">
+              <p style="margin:0;font-size:13px;color:rgba(33,96,216,0.4);line-height:1.6;">
                 Je ontvangt deze mail omdat je je hebt aangemeld via festiv.app<br/>
                 © 2026 Festiv — Om mooie dagen nóg mooier te maken.
               </p>
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Er ging iets mis, probeer het opnieuw." }, { status: 500 });
   }
 
-  await resend.emails.send({
+  await resend?.emails.send({
     from: "Festiv <onboarding@resend.dev>",
     to: email,
     subject: "Je staat op de lijst! ★",

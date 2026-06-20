@@ -112,10 +112,10 @@ const translations = {
 function GlobeIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="9" cy="9" r="8" stroke="#2A1758" strokeWidth="1.4"/>
-      <ellipse cx="9" cy="9" rx="3.5" ry="8" stroke="#2A1758" strokeWidth="1.4"/>
-      <line x1="1" y1="6.5" x2="17" y2="6.5" stroke="#2A1758" strokeWidth="1.4"/>
-      <line x1="1" y1="11.5" x2="17" y2="11.5" stroke="#2A1758" strokeWidth="1.4"/>
+      <circle cx="9" cy="9" r="8" stroke="#2160D8" strokeWidth="1.4"/>
+      <ellipse cx="9" cy="9" rx="3.5" ry="8" stroke="#2160D8" strokeWidth="1.4"/>
+      <line x1="1" y1="6.5" x2="17" y2="6.5" stroke="#2160D8" strokeWidth="1.4"/>
+      <line x1="1" y1="11.5" x2="17" y2="11.5" stroke="#2160D8" strokeWidth="1.4"/>
     </svg>
   );
 }
@@ -123,13 +123,13 @@ function GlobeIcon() {
 function ChevronDown() {
   return (
     <svg width="9" height="6" viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M1 1L4.5 5L8 1" stroke="#2A1758" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M1 1L4.5 5L8 1" stroke="#2160D8" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }
 
 // "Festiv" met gouden ster als punt op de i
-function FestivLogo({ size = 36, color = "#2A1758", letterSpacing = "-1px", weight = 800 }: { size?: number | string; color?: string; letterSpacing?: string; weight?: number }) {
+function FestivLogo({ size = 36, color = "#2160D8", letterSpacing = "-1px", weight = 800 }: { size?: number | string; color?: string; letterSpacing?: string; weight?: number }) {
   return (
     <span style={{ fontFamily: "'Playfair Display', serif", fontSize: size, fontWeight: weight, color, letterSpacing, lineHeight: 1 }}>
       Fest
@@ -161,7 +161,7 @@ function FestivLogo({ size = 36, color = "#2A1758", letterSpacing = "-1px", weig
             animation: "shooting-star-tail 1.9s ease-out 0.3s both",
           }} />
           {/* Ster */}
-          <span style={{ color: "#FFD166" }}>★</span>
+          <span style={{ color: "#FBC02D" }}>★</span>
         </span>
       </span>
       v
@@ -170,27 +170,27 @@ function FestivLogo({ size = 36, color = "#2A1758", letterSpacing = "-1px", weig
 }
 
 // Vaste posities zodat server/client identiek renderen (geen Math.random tijdens render)
-const INTRO_STARS = [
-  { top: "12%", left: "8%", size: 3, delay: 0.1, dur: 2.8 },
-  { top: "22%", left: "22%", size: 2, delay: 0.8, dur: 3.4 },
-  { top: "8%", left: "38%", size: 2, delay: 1.4, dur: 2.6 },
-  { top: "18%", left: "62%", size: 3, delay: 0.4, dur: 3.0 },
-  { top: "10%", left: "80%", size: 2, delay: 1.1, dur: 2.9 },
-  { top: "30%", left: "92%", size: 3, delay: 0.6, dur: 3.2 },
-  { top: "42%", left: "14%", size: 2, delay: 1.7, dur: 2.7 },
-  { top: "55%", left: "6%", size: 3, delay: 0.2, dur: 3.1 },
-  { top: "68%", left: "18%", size: 2, delay: 1.0, dur: 2.5 },
-  { top: "78%", left: "32%", size: 3, delay: 0.5, dur: 3.3 },
-  { top: "88%", left: "48%", size: 2, delay: 1.3, dur: 2.9 },
-  { top: "82%", left: "64%", size: 3, delay: 0.9, dur: 2.8 },
-  { top: "70%", left: "82%", size: 2, delay: 1.6, dur: 3.0 },
-  { top: "58%", left: "94%", size: 3, delay: 0.3, dur: 2.6 },
-  { top: "40%", left: "76%", size: 2, delay: 1.2, dur: 3.4 },
-  { top: "48%", left: "44%", size: 2, delay: 0.7, dur: 2.7 },
-  { top: "62%", left: "58%", size: 3, delay: 1.5, dur: 3.1 },
-  { top: "30%", left: "50%", size: 2, delay: 0.0, dur: 2.9 },
-  { top: "92%", left: "10%", size: 2, delay: 1.8, dur: 2.6 },
-  { top: "5%", left: "60%", size: 2, delay: 0.45, dur: 3.0 },
+const INTRO_DOTS = [
+  { top: "12%", left: "8%",  size: 4, delay: 0.1,  dur: 2.8, color: "magenta" },
+  { top: "22%", left: "22%", size: 3, delay: 0.8,  dur: 3.4, color: "yellow"  },
+  { top: "8%",  left: "38%", size: 3, delay: 1.4,  dur: 2.6, color: "magenta" },
+  { top: "18%", left: "62%", size: 4, delay: 0.4,  dur: 3.0, color: "yellow"  },
+  { top: "10%", left: "80%", size: 3, delay: 1.1,  dur: 2.9, color: "magenta" },
+  { top: "30%", left: "92%", size: 4, delay: 0.6,  dur: 3.2, color: "yellow"  },
+  { top: "42%", left: "14%", size: 3, delay: 1.7,  dur: 2.7, color: "yellow"  },
+  { top: "55%", left: "6%",  size: 4, delay: 0.2,  dur: 3.1, color: "magenta" },
+  { top: "68%", left: "18%", size: 3, delay: 1.0,  dur: 2.5, color: "yellow"  },
+  { top: "78%", left: "32%", size: 4, delay: 0.5,  dur: 3.3, color: "magenta" },
+  { top: "88%", left: "48%", size: 3, delay: 1.3,  dur: 2.9, color: "yellow"  },
+  { top: "82%", left: "64%", size: 4, delay: 0.9,  dur: 2.8, color: "magenta" },
+  { top: "70%", left: "82%", size: 3, delay: 1.6,  dur: 3.0, color: "yellow"  },
+  { top: "58%", left: "94%", size: 4, delay: 0.3,  dur: 2.6, color: "magenta" },
+  { top: "40%", left: "76%", size: 3, delay: 1.2,  dur: 3.4, color: "yellow"  },
+  { top: "48%", left: "44%", size: 3, delay: 0.7,  dur: 2.7, color: "magenta" },
+  { top: "62%", left: "58%", size: 4, delay: 1.5,  dur: 3.1, color: "yellow"  },
+  { top: "30%", left: "50%", size: 3, delay: 0.0,  dur: 2.9, color: "magenta" },
+  { top: "92%", left: "10%", size: 3, delay: 1.8,  dur: 2.6, color: "yellow"  },
+  { top: "5%",  left: "60%", size: 3, delay: 0.45, dur: 3.0, color: "magenta" },
 ];
 
 // We gebruiken sessionStorage (blijft staan bij client-side navigatie, bv. terug naar "/"
@@ -280,11 +280,10 @@ export default function Home() {
 
   useEffect(() => {
     if (introAlreadyPlayed) return;
-    // Ster-animatie (shooting-star) duurt 0.3s delay + 1.9s = 2.2s, daarna pas de wipe.
-    // introDone wordt gezet via onTransitionEnd op de wipe-achtergrond, exact synchroon met de animatie.
-    const t1 = setTimeout(() => setShowTitle(true), 150);
+    // Logo-animatie: wave 0.1–1s, baubles 0.85–1.7s, wordmark 1.05–1.65s → wipe pas na ~2.2s
+    const t1 = setTimeout(() => setShowTitle(true), 100);
     const t2 = setTimeout(() => setShowSubtitle(true), 1200);
-    const t3 = setTimeout(() => setIntroWipe(true), 1900);
+    const t3 = setTimeout(() => setIntroWipe(true), 1800);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [introAlreadyPlayed]);
 
@@ -364,7 +363,7 @@ export default function Home() {
     padding: "8px 12px",
     fontSize: "14px",
     fontWeight: 700,
-    color: "#2A1758",
+    color: "#2160D8",
     fontFamily: "'Inter', sans-serif",
     borderRadius: "8px",
     textDecoration: "none",
@@ -381,57 +380,75 @@ export default function Home() {
           position: "fixed",
           inset: 0,
           zIndex: 500,
-          overflow: "hidden",
           pointerEvents: introWipe ? "none" : "auto",
         }}>
-          {/* Paarse achtergrond + sterren — wipet omhoog */}
+          {/* Paarse achtergrond — wipes omhoog */}
           <div style={{
             position: "absolute",
             inset: 0,
-            background: "#2A1758",
+            background: "#E84C92",
             transform: introWipe ? "translateY(-100%)" : "translateY(0)",
-            transition: "transform 0.9s cubic-bezier(0.76,0,0.24,1)",
+            transition: "transform 0.6s cubic-bezier(0.76,0,0.24,1)",
           }}
           onTransitionEnd={() => { if (introWipe) { setIntroDone(true); sessionStorage.setItem(INTRO_FLAG, "1"); } }}>
-            {/* Sterren — kleine witte stippen die ademen */}
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-              {INTRO_STARS.map((s, i) => (
+              {INTRO_DOTS.map((s, i) => (
                 <span key={i} style={{
                   position: "absolute",
-                  top: s.top,
-                  left: s.left,
-                  width: s.size,
-                  height: s.size,
+                  top: s.top, left: s.left,
+                  width: s.size, height: s.size,
                   borderRadius: "50%",
-                  background: "#FFFFFF",
-                  animation: `star-breathe ${s.dur}s ease-in-out ${s.delay}s infinite`,
+                  background: s.color === "magenta" ? "#E84C92" : "#FBC02D",
+                  animation: `${s.color === "magenta" ? "dot-breathe-magenta" : "dot-breathe-yellow"} ${s.dur}s ease-in-out ${s.delay}s infinite`,
                 }} />
               ))}
             </div>
           </div>
 
-          {/* Tekst — blijft op zijn plek (geen transform) maar dooft tegelijk met de wipe, zodat hij niet los over de echte pagina blijft hangen */}
+          {/* Logo + tekst — bovenop paars, fadet weg als wipe start */}
           <div style={{
             position: "absolute",
             inset: 0,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            textAlign: "center",
-            opacity: introWipe ? 0 : 1,
-            transition: "opacity 0.9s ease",
+            opacity: introWipe ? 0 : (showTitle ? 1 : 0),
+            transition: "opacity 0.5s ease",
+            pointerEvents: "none",
           }}>
-            <h1 style={{
-              fontSize: "clamp(60px, 11vw, 110px)",
-              lineHeight: 0.95,
-              letterSpacing: "-3px",
-              margin: 0,
-              opacity: showTitle ? 1 : 0,
-              transform: showTitle ? "translateY(0)" : "translateY(30px)",
-              transition: "opacity 0.8s ease, transform 0.8s ease",
-            }}>
-              <FestivLogo size="clamp(60px, 11vw, 110px)" color="#FFFFFF" letterSpacing="-3px" weight={700} />
-            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 36 }}>
+              <svg width="96" height="96" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ overflow: "visible" }}>
+                <path
+                  d="M7 41 C18 23 27 49 36 32 C42 21 50 25 57 17 C58 20 57 24 53 29 C45 40 36 49 30 41 C24 33 19 39 13 48 C10 47 8 44 7 41 Z"
+                  fill="#2160D8"
+                  style={{ opacity: 0, animation: "wave-appear 0.6s ease 0.2s forwards" }}
+                />
+                <circle cx="19" cy="21" r="4.6" fill="#E84C92" style={{
+                  transformBox: "fill-box", transformOrigin: "center",
+                  animation: "bauble-pop 0.6s ease 0.9s both, bauble-float 3.2s ease-in-out 1.6s infinite",
+                }}/>
+                <circle cx="49" cy="44" r="4.6" fill="#FBC02D" style={{
+                  transformBox: "fill-box", transformOrigin: "center",
+                  animation: "bauble-pop 0.6s ease 1.0s both, bauble-float-inv 3.2s ease-in-out 1.7s infinite",
+                }}/>
+              </svg>
+              <span style={{
+                fontFamily: "'DM Serif Display', serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+                fontSize: "clamp(72px, 12vw, 120px)",
+                color: "#FFFFFF",
+                lineHeight: 1,
+                letterSpacing: "-0.02em",
+                opacity: 0,
+                animation: "wave-appear 0.8s ease 0.2s forwards",
+                willChange: "opacity",
+                transform: "translateZ(0)",
+                paddingLeft: 16,
+              }}>
+                festiv
+              </span>
+            </div>
           </div>
         </div>
       )}
@@ -446,9 +463,9 @@ export default function Home() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        background: "rgba(250,250,248,0.95)",
+        background: "rgba(255,240,246,0.95)",
         backdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(42,23,88,0.1)",
+        borderBottom: "1px solid rgba(232,76,146,0.12)",
         opacity: introDone ? 1 : 0,
         transition: "opacity 0.6s ease",
         pointerEvents: introDone ? "auto" : "none",
@@ -460,25 +477,32 @@ export default function Home() {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}>
-            <FestivLogo size={36} color="#2A1758" letterSpacing="-0.5px" />
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 41 C18 23 27 49 36 32 C42 21 50 25 57 17 C58 20 57 24 53 29 C45 40 36 49 30 41 C24 33 19 39 13 48 C10 47 8 44 7 41 Z" fill="#2160D8"/>
+                  <circle cx="19" cy="21" r="4.6" fill="#E84C92"/>
+                  <circle cx="49" cy="44" r="4.6" fill="#FBC02D"/>
+                </svg>
+                <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 400, fontSize: 26, color: "#1A1A1A", lineHeight: 1, letterSpacing: "-0.01em" }}>festiv</span>
+              </span>
           </Link>
 
           <div style={{ position: "relative" }}
             onMouseEnter={() => setOverFestivOpen(true)}
             onMouseLeave={() => setOverFestivOpen(false)}>
             <Link href="/meer-over-festiv" style={navLink}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(42,23,88,0.08)")}
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
               onMouseLeave={e => (e.currentTarget.style.background = "none")}>
               {txt.moreFestiv}
             </Link>
             {overFestivOpen && (
               <div style={{ position: "absolute", top: "100%", left: 0, paddingTop: "8px", background: "transparent", width: "max-content", zIndex: 300 }}>
-                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(42,23,88,0.15)", padding: "6px" }}>
+                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(232,76,146,0.18)", padding: "6px" }}>
                   {[
                     { label: lang === "nl" ? "Zo werkt het" : "How it works", href: "/meer-over-festiv/hoe-werkt-het" },
                     { label: lang === "nl" ? "Het ontstaan" : "Our story", href: "/meer-over-festiv/het-ontstaan" },
                   ].map(item => (
-                    <Link key={item.label} href={item.href} style={{ display: "block", padding: "9px 14px", fontSize: "14px", fontWeight: 700, color: "#2A1758", textDecoration: "none", borderRadius: "8px", whiteSpace: "nowrap" as const }}
+                    <Link key={item.label} href={item.href} style={{ display: "block", padding: "9px 14px", fontSize: "14px", fontWeight: 700, color: "#2160D8", textDecoration: "none", borderRadius: "8px", whiteSpace: "nowrap" as const }}
                       onMouseEnter={e => (e.currentTarget.style.background = "rgba(248,245,240,0.35)")}
                       onMouseLeave={e => (e.currentTarget.style.background = "none")}>
                       {item.label}
@@ -490,7 +514,7 @@ export default function Home() {
           </div>
 
           <Link href="/ervaringen" style={navLink}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(42,23,88,0.08)")}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
             onMouseLeave={e => (e.currentTarget.style.background = "none")}>
             {txt.experiences}
           </Link>
@@ -499,7 +523,7 @@ export default function Home() {
             onMouseEnter={() => setOverOnsOpen(true)}
             onMouseLeave={() => setOverOnsOpen(false)}>
             <Link href="/over-ons" style={navLink}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(42,23,88,0.08)")}
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
               onMouseLeave={e => (e.currentTarget.style.background = "none")}>
               {txt.aboutUs}
             </Link>
@@ -512,14 +536,14 @@ export default function Home() {
                 width: "max-content",
                 zIndex: 300,
               }}>
-                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(42,23,88,0.15)", padding: "6px" }}>
+                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(232,76,146,0.18)", padding: "6px" }}>
                 {[{ label: txt.ourTeam, href: "/over-ons/ons-team" }, { label: txt.workAt, href: "/over-ons/werken-bij" }].map(item => (
                   <Link key={item.label} href={item.href} style={{
                     display: "block",
                     padding: "9px 14px",
                     fontSize: "14px",
                     fontWeight: 700,
-                    color: "#2A1758",
+                    color: "#2160D8",
                     textDecoration: "none",
                     borderRadius: "8px",
                     whiteSpace: "nowrap" as const,
@@ -537,7 +561,7 @@ export default function Home() {
           <Link
             href={hasScrolled ? "#vragen" : "/vragen"}
             style={navLink}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(42,23,88,0.08)")}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
             onMouseLeave={e => (e.currentTarget.style.background = "none")}
             onClick={e => {
               if (hasScrolled) {
@@ -549,7 +573,7 @@ export default function Home() {
             {txt.faqNav}
           </Link>
           <Link href="/contact" style={navLink}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(42,23,88,0.08)")}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
             onMouseLeave={e => (e.currentTarget.style.background = "none")}>
             {txt.contact}
           </Link>
@@ -567,11 +591,11 @@ export default function Home() {
             </button>
             {langOpen && (
               <div style={{ position: "absolute", top: "100%", right: 0, paddingTop: "6px", zIndex: 300 }}>
-                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(42,23,88,0.15)", padding: "6px", width: "140px" }}>
+                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(232,76,146,0.18)", padding: "6px", width: "140px" }}>
                   {[{ label: "Nederlands", value: "nl" }, { label: "English", value: "en" }].map(opt => (
                     <button key={opt.value} onClick={() => { if (lang !== opt.value) toggle(); setLangOpen(false); }} style={{
                       display: "block", width: "100%", textAlign: "left", padding: "9px 14px", fontSize: "14px",
-                      fontWeight: lang === opt.value ? 700 : 500, color: "#2A1758",
+                      fontWeight: lang === opt.value ? 700 : 500, color: "#2160D8",
                       background: lang === opt.value ? "rgba(248,245,240,0.35)" : "none",
                       border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'Inter', sans-serif",
                     }}
@@ -585,8 +609,8 @@ export default function Home() {
             )}
           </div>
           <a href="#download" style={{
-            background: "#FFD166",
-            color: "#2A1758",
+            background: "#FBC02D",
+            color: "#2160D8",
             padding: "10px 22px",
             borderRadius: "100px",
             fontSize: "14px",
@@ -598,7 +622,7 @@ export default function Home() {
             {txt.download}
           </a>
           <a href="#aanmelden" style={{
-            background: "#2A1758",
+            background: "#E84C92",
             color: "#FFFFFF",
             padding: "10px 22px",
             borderRadius: "100px",
@@ -615,7 +639,7 @@ export default function Home() {
 
       {/* Hero + Telefoon: sticky container. Geen losse buffer meer — het paarse blok schuift al tijdens de eerste 100vh scroll over de hero heen. Hoogte = 100vh (scroll-tied slide) + 100vh (sticky scroll-runway) = 200vh. */}
       <div style={{ height: "200vh", position: "relative" }}>
-        <div style={{ position: "sticky", top: 0, height: "100vh", background: "#FAFAF8", overflow: "hidden" }}>
+        <div style={{ position: "sticky", top: 0, height: "100vh", background: "#FCF8F0", overflow: "hidden" }}>
 
           {/* Vak 1, 2, 3 — verschijnen zodra de intro klaar is, vervagen terwijl het paarse blok erover heen schuift */}
           <div style={{
@@ -642,7 +666,7 @@ export default function Home() {
                   fontFamily: "'Playfair Display', serif",
                   fontSize: "clamp(24px, 3vw, 36px)",
                   fontWeight: 700,
-                  color: "#2A1758",
+                  color: "#2160D8",
                   lineHeight: 1.2,
                   letterSpacing: "-0.5px",
                 }}>
@@ -653,7 +677,7 @@ export default function Home() {
                     fontSize: "0.28em",
                     fontWeight: 700,
                     letterSpacing: "0.5px",
-                    color: "#2A1758",
+                    color: "#2160D8",
                     opacity: 0.5,
                     marginLeft: "2px",
                   }}>TM</sup>
@@ -680,7 +704,7 @@ export default function Home() {
                   {/* Lichte tweede lijn iets verschoven, voor een handgetekend effect */}
                   <path
                     d="M6 12 C 50 4, 90 60, 150 56 C 168 54.5, 184 48, 198 40"
-                    stroke="#FFD166"
+                    stroke="#FBC02D"
                     strokeWidth="2"
                     strokeLinecap="round"
                     fill="none"
@@ -695,7 +719,7 @@ export default function Home() {
                   {/* Hoofdlijn — licht golvend, niet perfect recht */}
                   <path
                     d="M8 16 C 52 7, 92 64, 152 60 C 170 58.5, 186 51, 200 43"
-                    stroke="#2A1758"
+                    stroke="#2160D8"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     fill="none"
@@ -709,7 +733,7 @@ export default function Home() {
                   {/* Duidelijke pijlpunt */}
                   <path
                     d="M200 43 L182 38 M200 43 L191 59"
-                    stroke="#2A1758"
+                    stroke="#2160D8"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -746,7 +770,7 @@ export default function Home() {
           <div style={{
             position: "absolute",
             inset: 0,
-            background: "#2A1758",
+            background: "#E84C92",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -823,7 +847,7 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 20 }}>
 
         {/* Zo werkt het + Counter */}
-        <section style={{ background: "#FAFAF8", padding: "100px 24px" }}>
+        <section style={{ background: "#FCF8F0", padding: "100px 24px" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto", display: "grid", gridTemplateColumns: "480px 1fr 280px", gap: "60px", alignItems: "start" }}>
 
             {/* Links: titel + blokken */}
@@ -834,7 +858,7 @@ export default function Home() {
                 fontWeight: 700,
                 letterSpacing: "-1px",
                 marginBottom: "40px",
-                color: "#2A1758",
+                color: "#2160D8",
               }}>
                 {txt.howTitle}
               </h2>
@@ -842,14 +866,14 @@ export default function Home() {
               <div data-reveal="blokken" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 {txt.steps.map((item, i) => (
                   <div key={i} style={{
-                    background: "#2A1758",
+                    background: "#E84C92",
                     borderRadius: "20px",
                     padding: "28px 28px",
                     textAlign: "left",
                     position: "relative",
                     ...slideIn("blokken", i * 0.55),
                   }}>
-                    <div style={{ width: "32px", height: "3px", background: "#FFD166", borderRadius: "2px", marginBottom: "16px" }} />
+                    <div style={{ width: "32px", height: "3px", background: "#FBC02D", borderRadius: "2px", marginBottom: "16px" }} />
                     <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "19px", fontWeight: 700, marginBottom: "8px", color: "#FFFFFF" }}>
                       {item.title}
                     </h3>
@@ -872,18 +896,18 @@ export default function Home() {
                 fontSize: "clamp(100px, 12vw, 150px)",
                 fontFamily: "'Playfair Display', serif",
                 fontWeight: 800,
-                color: "#2A1758",
+                color: "#2160D8",
                 letterSpacing: "-5px",
                 lineHeight: 1,
                 marginBottom: "16px",
               }}>
                 500+
               </div>
-              <p style={{ fontSize: "26px", color: "#2A1758", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
+              <p style={{ fontSize: "26px", color: "#2160D8", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
                 {txt.counterSub}
               </p>
-              <p style={{ fontSize: "16px", color: "#2A1758", lineHeight: 1.6, fontWeight: 700 }}>
-                {txt.counterDesc} <span style={{ color: "#FFD166", fontWeight: 800 }}>{txt.counterHighlight}</span>
+              <p style={{ fontSize: "16px", color: "#2160D8", lineHeight: 1.6, fontWeight: 700 }}>
+                {txt.counterDesc} <span style={{ color: "#FBC02D", fontWeight: 800 }}>{txt.counterHighlight}</span>
               </p>
             </div>
 
@@ -974,12 +998,12 @@ export default function Home() {
         </section>
 
         {/* FAQ + Aanmelden wrapper */}
-        <div style={{ position: "relative", background: "#FAFAF8" }}>
+        <div style={{ position: "relative", background: "#FCF8F0" }}>
 
         {/* FAQ */}
         <section id="vragen" style={{ background: "transparent", padding: "0 24px 100px", position: "relative", zIndex: 1 }} onClick={() => setOpenFaq(null)}>
           <div style={{ maxWidth: "920px", margin: "0 auto", textAlign: "center" }}>
-            <div style={{ background: "#2A1758", borderRadius: "24px", padding: "48px 48px 64px", display: "flex", flexDirection: "column" }}>
+            <div style={{ background: "#E84C92", borderRadius: "24px", padding: "48px 48px 64px", display: "flex", flexDirection: "column" }}>
             <h2 style={{
               fontFamily: "'Playfair Display', serif",
               fontSize: "clamp(32px, 5vw, 52px)",
@@ -1040,8 +1064,8 @@ export default function Home() {
                           </p>
                           <Link href="/contact" style={{
                             display: "inline-block",
-                            background: "#FFD166",
-                            color: "#2A1758",
+                            background: "#FBC02D",
+                            color: "#2160D8",
                             padding: "10px 22px",
                             borderRadius: "100px",
                             fontSize: "14px",
@@ -1075,7 +1099,7 @@ export default function Home() {
 
         {/* Aanmelden */}
         <section id="aanmelden" style={{ position: "relative", padding: "240px 24px 120px", textAlign: "center", zIndex: 1, background: "transparent" }}>
-          <div style={{ maxWidth: "520px", margin: "0 auto", background: "#2A1758", borderRadius: "24px", padding: "48px 40px", position: "relative", zIndex: 2 }}>
+          <div style={{ maxWidth: "520px", margin: "0 auto", background: "#E84C92", borderRadius: "24px", padding: "48px 40px", position: "relative", zIndex: 2 }}>
             <h2 style={{
               fontFamily: "'Playfair Display', serif",
               fontSize: "clamp(32px, 5vw, 48px)",
@@ -1112,18 +1136,18 @@ export default function Home() {
                     transition: "border-color 0.2s",
                     fontFamily: "'Inter', sans-serif",
                   }}
-                  onFocus={e => (e.currentTarget.style.borderColor = "#FAFAF8")}
+                  onFocus={e => (e.currentTarget.style.borderColor = "#FCF8F0")}
                   onBlur={e => (e.currentTarget.style.borderColor = "rgba(248,245,240,0.25)")}
                 />
 
-                {error && <p style={{ color: "#FFD166", fontSize: "14px", fontWeight: 600 }}>{error}</p>}
+                {error && <p style={{ color: "#FBC02D", fontSize: "14px", fontWeight: 600 }}>{error}</p>}
 
                 <button
                   type="submit"
                   disabled={loading}
                   style={{
-                    background: loading ? "rgba(255,209,102,0.5)" : "#FFD166",
-                    color: "#2A1758",
+                    background: loading ? "rgba(255,209,102,0.5)" : "#FBC02D",
+                    color: "#2160D8",
                     padding: "20px",
                     borderRadius: "16px",
                     fontSize: "16px",
@@ -1145,26 +1169,26 @@ export default function Home() {
               </form>
             ) : (
               <div style={{
-                background: "rgba(42,23,88,0.08)",
-                border: "1px solid rgba(42,23,88,0.15)",
+                background: "rgba(232,76,146,0.08)",
+                border: "1px solid rgba(232,76,146,0.18)",
                 borderRadius: "24px",
                 padding: "48px 40px",
               }}>
                 <div style={{
                   width: "56px", height: "56px",
                   borderRadius: "50%",
-                  background: "#FFD166",
+                  background: "#FBC02D",
                   margin: "0 auto 20px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "22px",
-                  color: "#2A1758",
+                  color: "#2160D8",
                   fontWeight: 700,
                 }}>
                   ✓
                 </div>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "28px", fontWeight: 700, marginBottom: "12px", color: "#2A1758" }}>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "28px", fontWeight: 700, marginBottom: "12px", color: "#2160D8" }}>
                   {txt.successTitle}
                 </h3>
                 <p style={{ color: "rgba(42,23,88,0.6)", lineHeight: 1.6 }}>
@@ -1178,13 +1202,20 @@ export default function Home() {
         </div>{/* end FAQ + Aanmelden wrapper */}
 
         {/* Footer */}
-        <footer style={{ background: "#2A1758", padding: "32px 40px 40px" }}>
+        <footer style={{ background: "#E84C92", padding: "32px 40px 40px" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "40px" }}>
 
             {/* Links: logo + copyright */}
             <div>
               <div style={{ marginBottom: "12px" }}>
-                <FestivLogo size={28} color="#FFFFFF" letterSpacing="-0.5px" weight={800} />
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 41 C18 23 27 49 36 32 C42 21 50 25 57 17 C58 20 57 24 53 29 C45 40 36 49 30 41 C24 33 19 39 13 48 C10 47 8 44 7 41 Z" fill="#FCF8F0"/>
+                    <circle cx="19" cy="21" r="4.6" fill="#FBC02D"/>
+                    <circle cx="49" cy="44" r="4.6" fill="#E84C92"/>
+                  </svg>
+                  <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 400, fontSize: 22, color: "#FCF8F0", lineHeight: 1, letterSpacing: "-0.01em" }}>festiv</span>
+                </span>
               </div>
               <p style={{ opacity: 0.55, fontSize: "13px", color: "#FFFFFF" }}>
                 {txt.footerCopy}
