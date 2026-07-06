@@ -1,1282 +1,621 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useLang } from "./lib/LanguageContext";
 
+// ─── Kleuren (logo palette) ──────────────────────────────────────────────────
+const C = {
+  dark: "#1a0a1e",                      // terracotta — hero, dark secties, footer
+  cream: "#f3e7cd",                     // warm creme — lichte secties
+  text: "#1f1a12",                      // donker ink op creme
+  textLight: "#f3e7cd",                 // tekst op donker
+  textMuted: "rgba(243,231,205,0.65)",
+  textMutedDark: "rgba(31,26,18,0.55)",
+  accent: "#1a0a1e",
+  accentAlt: "#f3e7cd",
+};
+
+// ─── Logo component ──────────────────────────────────────────────────────────
+function FestivAppIcon({ size = 40 }: { size?: number }) {
+  const ticket = size * 0.625;
+  const hole = size * 0.12;
+  const heart = size * 0.175;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: size * 0.24,
+      background: "#1a0a1e", boxShadow: `0 ${size*0.06}px ${size*0.15}px rgba(196,98,46,.35)`,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: size * 0.075,
+      flexShrink: 0,
+    }}>
+      <div style={{
+        position: "relative", width: ticket, height: ticket * 0.62,
+        background: "#f3e7cd", borderRadius: size * 0.08,
+        transform: "rotate(-8deg)", boxShadow: `0 ${size*0.04}px ${size*0.09}px rgba(0,0,0,.25)`,
+      }}>
+        <div style={{ position: "absolute", top: "50%", left: 0, transform: "translate(-50%,-50%)", width: hole, height: hole, borderRadius: "50%", background: "#1a0a1e" }} />
+        <div style={{ position: "absolute", top: "50%", right: 0, transform: "translate(50%,-50%)", width: hole, height: hole, borderRadius: "50%", background: "#1a0a1e" }} />
+        <svg viewBox="0 0 24 24" width={heart} height={heart} style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%) rotate(-14deg)" }}>
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#1a0a1e" />
+        </svg>
+      </div>
+      <span style={{ fontFamily: "'Gabarito',sans-serif", fontWeight: 800, fontSize: size * 0.145, letterSpacing: "-0.5px", color: "#f3e7cd", lineHeight: 1 }}>Festiv</span>
+    </div>
+  );
+}
+
+// ─── Intro ───────────────────────────────────────────────────────────────────
+const INTRO_FLAG = "festivIntroPlayed";
+
+const INTRO_DOTS = [
+  { top: "12%", left: "8%",  size: 5,  delay: 0.1, dur: 2.8, color: "magenta" },
+  { top: "25%", left: "18%", size: 3,  delay: 0.4, dur: 3.1, color: "yellow" },
+  { top: "8%",  left: "35%", size: 4,  delay: 0.2, dur: 2.5, color: "magenta" },
+  { top: "18%", left: "55%", size: 6,  delay: 0.6, dur: 3.4, color: "yellow" },
+  { top: "5%",  left: "72%", size: 3,  delay: 0.3, dur: 2.9, color: "magenta" },
+  { top: "30%", left: "82%", size: 5,  delay: 0.7, dur: 2.6, color: "yellow" },
+  { top: "45%", left: "6%",  size: 4,  delay: 0.5, dur: 3.2, color: "yellow" },
+  { top: "60%", left: "22%", size: 3,  delay: 0.2, dur: 2.7, color: "magenta" },
+  { top: "72%", left: "12%", size: 6,  delay: 0.8, dur: 3.0, color: "yellow" },
+  { top: "55%", left: "45%", size: 4,  delay: 0.3, dur: 2.8, color: "magenta" },
+  { top: "80%", left: "58%", size: 3,  delay: 0.6, dur: 3.3, color: "yellow" },
+  { top: "65%", left: "75%", size: 5,  delay: 0.4, dur: 2.5, color: "magenta" },
+  { top: "85%", left: "88%", size: 4,  delay: 0.1, dur: 3.1, color: "yellow" },
+  { top: "40%", left: "92%", size: 3,  delay: 0.9, dur: 2.9, color: "magenta" },
+  { top: "90%", left: "35%", size: 5,  delay: 0.5, dur: 2.6, color: "yellow" },
+];
+
+// ─── Profiel-kaartje mockup ──────────────────────────────────────────────────
+function ProfileCard({ name, age, festivals, color, photo, photoPosition = "center top" }: { name: string; age: number; festivals: string[]; color: string; photo?: string; photoPosition?: string }) {
+  return (
+    <div style={{
+      background: "#fff",
+      borderRadius: 20,
+      padding: "20px 20px 16px",
+      boxShadow: "0 8px 32px rgba(42,23,88,0.12)",
+      width: 220,
+    }}>
+      <div style={{
+        width: "100%", height: 160, borderRadius: 12, background: color, marginBottom: 0,
+        overflow: "hidden", position: "relative",
+      }}>
+        {photo && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={photo} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: photoPosition }} />
+        )}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          padding: "24px 12px 8px",
+          background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.55))",
+        }}>
+          <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 18, color: "#fff" }}>{name}, {age}</div>
+        </div>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
+        {festivals.map(f => (
+          <span key={f} style={{ fontSize: 11, fontWeight: 600, color: C.dark, background: C.cream, borderRadius: 20, padding: "3px 10px" }}>{f}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Translations ─────────────────────────────────────────────────────────────
 const translations = {
   nl: {
-    moreFestiv: "Over Festiv",
-    experiences: "Ervaringen",
-    aboutUs: "Over ons",
-    ourTeam: "Ons team",
-    workAt: "Werken bij",
-    contact: "Contact",
     download: "Download de app",
-    signup: "Aanmelden",
-    subtitle: "Om mooie dagen nóg mooier te maken",
-    tagline1: "De dating app",
-    tagline2: "om mooie dagen nóg mooier te maken.",
-    scroll: "SCROLL",
-    line1: "Ga je naar een festival of een event?",
-    line2: "Match vooraf met mensen die ook gaan.",
-    line3: "En maak een mooie dag nóg mooier.",
-    howTitle: "Zo werkt het",
-    steps: [
-      { title: "Kies je evenementen", desc: "Voeg de feesten en festivals toe waar jij naartoe gaat." },
-      { title: "Swipe je matches", desc: "Zie wie ook gaan en like mensen die jij interessant vindt." },
-      { title: "Ontmoet elkaar", desc: "Match, chat en spreek spontaan af bij een stage of meet up." },
+    navLinks: [
+      { label: "Zo werkt het", href: "#hoe" },
+      { label: "Festivals", href: "#festivals" },
+      { label: "Vragen", href: "#vragen" },
     ],
-    counterSub: "Mensen gingen je al voor",
-    counterDesc: "Wees er snel bij — de eerste gebruikers krijgen een",
-    counterHighlight: "half jaar gratis premium",
-    signupTitle: "Enthousiast?",
-    signupSub: "Laat je e-mailadres achter en wij laten je als eerste weten wanneer Festiv live gaat.",
+    heroTitle: "Making great days even greater.",
+    heroSub: "Match vooraf met mensen die ook naar hetzelfde festival gaan. Geen eindeloos swipen — gewoon echte ontmoetingen.",
+    howTitle: "Zo werkt Festiv...",
+    howSub: "Ga je naar een festival? Festiv laat je zien wie er ook heen gaat. Like, match, en spreek af bij de hoofdpoort.",
+    step1Title: "Voeg je festivals toe",
+    step1Sub: "Selecteer welke festivals en events je dit jaar bezoekt. Festiv laat je zien wie er ook heen gaat.",
+    step2Title: "Swipe & match",
+    step2Sub: "Bekijk profielen van mensen die ook gaan. Like wie je interessant vindt — match als het wederzijds is.",
+    step3Title: "Ontmoet elkaar",
+    step3Sub: "Chat kort, spreek af bij een podium of de ingang. Geen weken chatten — gewoon een mooie dag samen.",
+    featuresTitle: "Festiv voor iedereen",
+    features: [
+      { icon: "", text: "Voor festivals én kleinere events" },
+      { icon: "", text: "Romantisch, vrienden of gezelschap" },
+      { icon: "", text: "Geverifieerde profielen" },
+      { icon: "", text: "Matchet op basis van je agenda" },
+      { icon: "", text: "Eerste gebruikers krijgen half jaar premium gratis" },
+    ],
+    statsItems: [
+      { num: "500+", label: "aanmeldingen" },
+      { num: "50+", label: "festivals in de app" },
+      { num: "2026", label: "live" },
+    ],
+    ctaTitle: "Wees er als eerste bij.",
+    ctaSub: "Meld je aan voor de wachtlijst. De eerste gebruikers krijgen een half jaar premium gratis.",
     placeholder: "jouw@email.nl",
-    signupBtn: "Meld je vast aan terwijl wij hard verder bouwen",
+    signupBtn: "Aanmelden voor de wachtlijst",
     noSpam: "Geen spam. Geen zorgen.",
     successTitle: "Je staat op de lijst!",
     successSub: "We laten je als eerste weten wanneer Festiv live gaat.",
-    faqNav: "Vragen",
     faqTitle: "Veelgestelde vragen",
     faqItems: [
-      { q: "Wat is Festiv?", a: "Festiv is een app waarmee je mensen kunt ontmoeten die naar hetzelfde festival of evenement gaan als jij. Je matcht van tevoren, chatmet ze, en spreekt af ter plekke." },
-      { q: "Voor wie is Festiv bedoeld?", a: "Voor iedereen die naar festivals en evenementen gaat en openstaat voor nieuwe ontmoetingen — of je nu iemand romantisch zoekt, vrienden wil maken, of gewoon gezelschap wil hebben bij een podium." },
-      { q: "Is Festiv gratis?", a: "De basisfunctionaliteit is gratis. De eerste gebruikers die zich aanmelden krijgen een half jaar premium gratis — met toegang tot alle functies zonder beperkingen." },
-      { q: "Hoe werkt matchen op Festiv?", a: "Je voegt de evenementen toe waar jij naartoe gaat. Festiv laat je zien wie er ook heen gaan. Je liket mensen die je interessant vindt, en als zij jou ook liken ontstaat er een match. Dan kun je chatten en iets afspreken." },
-      { q: "Mijn festival staat er niet bij, wat nu?", a: "Stuur ons een bericht via de contactpagina en we voegen het toe. We bouwen de database continu uit op basis van wat gebruikers aanvragen." },
-      { q: "Wanneer is Festiv beschikbaar?", a: "We zijn hard aan het bouwen. Meld je aan voor de wachtlijst en je bent als eerste op de hoogte wanneer de app live gaat." },
-      { q: "Mijn vraag staat er niet tussen. Wat nu?", a: null },
+      { q: "Wat is Festiv?", a: "Festiv is een app waarmee je mensen kunt ontmoeten die naar hetzelfde festival of evenement gaan als jij. Je matcht van tevoren en spreekt af ter plekke." },
+      { q: "Voor wie is Festiv bedoeld?", a: "Voor iedereen die naar festivals en evenementen gaat — of je nu iemand romantisch zoekt, vrienden wil maken, of gewoon gezelschap wil bij een podium." },
+      { q: "Is Festiv gratis?", a: "De basisfunctionaliteit is gratis. De eerste gebruikers die zich aanmelden krijgen een half jaar premium gratis." },
+      { q: "Wanneer is Festiv beschikbaar?", a: "We zijn hard aan het bouwen. Meld je aan voor de wachtlijst en je bent als eerste op de hoogte." },
+      { q: "Mijn festival staat er niet bij, wat nu?", a: "Stuur ons een bericht via de contactpagina en we voegen het toe." },
     ],
-    footerCopy: "© 2026 Festiv. Om mooie dagen nóg mooier te maken.",
     footerLinks: [
       { label: "Over ons", href: "/over-ons" },
-      { label: "Ervaringen", href: "/ervaringen" },
-      { label: "Meer over Festiv", href: "/meer-over-festiv" },
       { label: "Contact", href: "/contact" },
+      { label: "Privacybeleid", href: "/privacy" },
+      { label: "Algemene voorwaarden", href: "/terms" },
     ],
+    footerCopy: "© 2026 Festiv. Making great days even greater.",
   },
   en: {
-    moreFestiv: "About Festiv",
-    experiences: "Experiences",
-    aboutUs: "About us",
-    ourTeam: "Our team",
-    workAt: "Work at Festiv",
-    contact: "Contact",
     download: "Download the app",
-    signup: "Sign up",
-    subtitle: "To make great days even greater",
-    tagline1: "The dating app",
-    tagline2: "to make great days even greater.",
-    scroll: "SCROLL",
-    line1: "Going to a festival or an event?",
-    line2: "Match beforehand with people who are also going.",
-    line3: "And make a beautiful day even more beautiful.",
-    howTitle: "How it works",
-    steps: [
-      { title: "Choose your events", desc: "Add the parties and festivals you're going to." },
-      { title: "Swipe your matches", desc: "See who else is going and like people you find interesting." },
-      { title: "Meet each other", desc: "Match, chat and spontaneously meet up at a stage or meet up." },
+    navLinks: [
+      { label: "How it works", href: "#hoe" },
+      { label: "Festivals", href: "#festivals" },
+      { label: "FAQ", href: "#vragen" },
     ],
-    counterSub: "People already went before you",
-    counterDesc: "Be quick — the first users get a",
-    counterHighlight: "free six months premium",
-    signupTitle: "Excited?",
-    signupSub: "Leave your email address and we'll let you know first when Festiv goes live.",
+    heroTitle: "Making great days even greater.",
+    heroSub: "Match in advance with people going to the same festival. No endless swiping — just real connections.",
+    howTitle: "How Festiv works...",
+    howSub: "Going to a festival? Festiv shows you who else is going. Like, match, and meet up at the main gate.",
+    step1Title: "Add your festivals",
+    step1Sub: "Select which festivals and events you're attending this year. Festiv shows you who else is going.",
+    step2Title: "Swipe & match",
+    step2Sub: "Browse profiles of people who are also going. Like who you find interesting — match if it's mutual.",
+    step3Title: "Meet each other",
+    step3Sub: "Chat briefly, meet at a stage or the entrance. No weeks of chatting — just a great day together.",
+    featuresTitle: "Festiv for everyone",
+    features: [
+      { icon: "", text: "For festivals and smaller events" },
+      { icon: "", text: "Romantic, friends or company" },
+      { icon: "", text: "Verified profiles" },
+      { icon: "", text: "Matches based on your agenda" },
+      { icon: "", text: "First users get six months premium free" },
+    ],
+    statsItems: [
+      { num: "500+", label: "sign-ups" },
+      { num: "50+", label: "festivals in the app" },
+      { num: "2026", label: "going live" },
+    ],
+    ctaTitle: "Be the first.",
+    ctaSub: "Sign up for the waitlist. The first users get six months of premium for free.",
     placeholder: "your@email.com",
-    signupBtn: "Sign up while we keep building",
+    signupBtn: "Join the waitlist",
     noSpam: "No spam. No worries.",
     successTitle: "You're on the list!",
     successSub: "We'll let you know first when Festiv goes live.",
-    faqNav: "Questions",
     faqTitle: "Frequently asked questions",
     faqItems: [
-      { q: "What is Festiv?", a: "Festiv is an app that lets you meet people going to the same festival or event as you. You match in advance, chat with them, and meet up on the day." },
-      { q: "Who is Festiv for?", a: "For anyone who goes to festivals and events and is open to new connections — whether you're looking for something romantic, new friends, or just good company at a stage." },
-      { q: "Is Festiv free?", a: "The basic functionality is free. The first users to sign up get six months of premium for free — with access to all features without limits." },
-      { q: "How does matching work on Festiv?", a: "You add the events you're going to. Festiv shows you who else is going. You like people you find interesting, and if they like you back it's a match. Then you can chat and make plans." },
-      { q: "My festival isn't listed, what now?", a: "Send us a message via the contact page and we'll add it. We continuously expand the database based on what users request." },
-      { q: "When will Festiv be available?", a: "We're building hard. Sign up for the waitlist and you'll be the first to know when the app goes live." },
-      { q: "My question isn't listed. What now?", a: null },
+      { q: "What is Festiv?", a: "Festiv is an app that lets you meet people going to the same festival or event as you. You match in advance and meet up on the day." },
+      { q: "Who is Festiv for?", a: "For anyone who goes to festivals and events — whether you're looking for something romantic, new friends, or just good company at a stage." },
+      { q: "Is Festiv free?", a: "The basic functionality is free. The first users to sign up get six months of premium for free." },
+      { q: "When will Festiv be available?", a: "We're building hard. Sign up for the waitlist and you'll be the first to know." },
+      { q: "My festival isn't listed, what now?", a: "Send us a message via the contact page and we'll add it." },
     ],
-    footerCopy: "© 2026 Festiv. To make great days even greater.",
     footerLinks: [
       { label: "About us", href: "/over-ons" },
-      { label: "Experiences", href: "/ervaringen" },
-      { label: "More about Festiv", href: "/meer-over-festiv" },
       { label: "Contact", href: "/contact" },
+      { label: "Privacy policy", href: "/privacy" },
+      { label: "Terms & conditions", href: "/terms" },
     ],
+    footerCopy: "© 2026 Festiv. Making great days even greater.",
   },
 };
 
-function GlobeIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="9" cy="9" r="8" stroke="#2160D8" strokeWidth="1.4"/>
-      <ellipse cx="9" cy="9" rx="3.5" ry="8" stroke="#2160D8" strokeWidth="1.4"/>
-      <line x1="1" y1="6.5" x2="17" y2="6.5" stroke="#2160D8" strokeWidth="1.4"/>
-      <line x1="1" y1="11.5" x2="17" y2="11.5" stroke="#2160D8" strokeWidth="1.4"/>
-    </svg>
-  );
-}
-
-function ChevronDown() {
-  return (
-    <svg width="9" height="6" viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M1 1L4.5 5L8 1" stroke="#2160D8" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
-
-// "Festiv" met gouden ster als punt op de i
-function FestivLogo({ size = 36, color = "#2160D8", letterSpacing = "-1px", weight = 800 }: { size?: number | string; color?: string; letterSpacing?: string; weight?: number }) {
-  return (
-    <span style={{ fontFamily: "'Playfair Display', serif", fontSize: size, fontWeight: weight, color, letterSpacing, lineHeight: 1 }}>
-      Fest
-      <span style={{ position: "relative", display: "inline-block" }}>
-        &#x131;
-        {/* Geanimeerde container: ster + komeetstaart */}
-        <span style={{
-          position: "absolute",
-          top: "0.75em",
-          left: "55%",
-          fontSize: "0.17em",
-          lineHeight: 1,
-          display: "inline-block",
-          willChange: "transform, opacity",
-          animation: "shooting-star 1.9s ease-out 0.3s both",
-        }}>
-          {/* Komeetstaart */}
-          <span style={{
-            position: "absolute",
-            right: "55%",
-            top: "50%",
-            display: "block",
-            height: "0.35em",
-            background: "linear-gradient(to right, transparent 0%, rgba(255,209,102,0.25) 40%, rgba(255,209,102,0.75) 100%)",
-            transform: "translateY(-50%)",
-            borderRadius: "4px",
-            filter: "blur(1.5px)",
-            pointerEvents: "none",
-            animation: "shooting-star-tail 1.9s ease-out 0.3s both",
-          }} />
-          {/* Ster */}
-          <span style={{ color: "#FBC02D" }}>★</span>
-        </span>
-      </span>
-      v
-    </span>
-  );
-}
-
-// Vaste posities zodat server/client identiek renderen (geen Math.random tijdens render)
-const INTRO_DOTS = [
-  { top: "12%", left: "8%",  size: 4, delay: 0.1,  dur: 2.8, color: "magenta" },
-  { top: "22%", left: "22%", size: 3, delay: 0.8,  dur: 3.4, color: "yellow"  },
-  { top: "8%",  left: "38%", size: 3, delay: 1.4,  dur: 2.6, color: "magenta" },
-  { top: "18%", left: "62%", size: 4, delay: 0.4,  dur: 3.0, color: "yellow"  },
-  { top: "10%", left: "80%", size: 3, delay: 1.1,  dur: 2.9, color: "magenta" },
-  { top: "30%", left: "92%", size: 4, delay: 0.6,  dur: 3.2, color: "yellow"  },
-  { top: "42%", left: "14%", size: 3, delay: 1.7,  dur: 2.7, color: "yellow"  },
-  { top: "55%", left: "6%",  size: 4, delay: 0.2,  dur: 3.1, color: "magenta" },
-  { top: "68%", left: "18%", size: 3, delay: 1.0,  dur: 2.5, color: "yellow"  },
-  { top: "78%", left: "32%", size: 4, delay: 0.5,  dur: 3.3, color: "magenta" },
-  { top: "88%", left: "48%", size: 3, delay: 1.3,  dur: 2.9, color: "yellow"  },
-  { top: "82%", left: "64%", size: 4, delay: 0.9,  dur: 2.8, color: "magenta" },
-  { top: "70%", left: "82%", size: 3, delay: 1.6,  dur: 3.0, color: "yellow"  },
-  { top: "58%", left: "94%", size: 4, delay: 0.3,  dur: 2.6, color: "magenta" },
-  { top: "40%", left: "76%", size: 3, delay: 1.2,  dur: 3.4, color: "yellow"  },
-  { top: "48%", left: "44%", size: 3, delay: 0.7,  dur: 2.7, color: "magenta" },
-  { top: "62%", left: "58%", size: 4, delay: 1.5,  dur: 3.1, color: "yellow"  },
-  { top: "30%", left: "50%", size: 3, delay: 0.0,  dur: 2.9, color: "magenta" },
-  { top: "92%", left: "10%", size: 3, delay: 1.8,  dur: 2.6, color: "yellow"  },
-  { top: "5%",  left: "60%", size: 3, delay: 0.45, dur: 3.0, color: "magenta" },
-];
-
-// We gebruiken sessionStorage (blijft staan bij client-side navigatie, bv. terug naar "/"
-// via het Festiv-logo). De reload-check hieronder staat bewust op module-niveau, dus hij
-// draait precies ÉÉN keer per echte page load — niet opnieuw bij elke keer dat het
-// Home-component zelf (opnieuw) mount door client-side navigatie. Zou hij wél bij elke
-// mount opnieuw draaien, dan blijft performance.getEntriesByType("navigation") namelijk
-// altijd hetzelfde (eerste) navigatietype van de hele tab teruggeven, ook na talloze
-// SPA-navigaties — en zou een sessie die ooit met een refresh begon de intro voor altijd
-// blijven herhalen.
-const INTRO_FLAG = "festivIntroPlayed";
-
-if (typeof window !== "undefined") {
-  const navEntry = performance.getEntriesByType?.("navigation")?.[0] as PerformanceNavigationTiming | undefined;
-  if (navEntry?.type === "reload") {
-    sessionStorage.removeItem(INTRO_FLAG);
-  }
-}
-
-function hasIntroPlayedThisSession(): boolean {
-  if (typeof window === "undefined") return false;
-  return sessionStorage.getItem(INTRO_FLAG) === "1";
-}
-
+// ─── Main ─────────────────────────────────────────────────────────────────────
 export default function Home() {
-  const { lang, toggle } = useLang();
-  const txt = translations[lang];
+  const { lang, toggle: setLang } = useLang();
+  const txt = translations[lang as keyof typeof translations] ?? translations.nl;
+
+  // Intro — start altijd als "done" (server-safe), client corrigeert in useEffect
+  const [introWipe, setIntroWipe] = useState(false);
+  const [introDone, setIntroDone] = useState(true);
+  const [showTitle, setShowTitle] = useState(false);
+
+  // Waitlist form
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [overOnsOpen, setOverOnsOpen] = useState(false);
-  const [overFestivOpen, setOverFestivOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
+
+  // FAQ
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const [showTitle, setShowTitle] = useState(false);
-  const [showSubtitle, setShowSubtitle] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-  const [innerHeight, setInnerHeight] = useState(800);
-  const [visible, setVisible] = useState<Set<string>>(new Set());
-
-  const [introWipe, setIntroWipe] = useState(false);
-  const [introDone, setIntroDone] = useState(false);
-  const [heroIn, setHeroIn] = useState(false);
-  const [introAlreadyPlayed, setIntroAlreadyPlayed] = useState(false);
-
-  // Pas na hydration checken (window bestaat niet op de server), zodat de eerste render altijd matcht.
-  useLayoutEffect(() => {
-    if (hasIntroPlayedThisSession()) {
-      setIntroAlreadyPlayed(true);
-      setIntroDone(true);
-      setHeroIn(true);
-    }
-    // De hoofdpagina heeft geen navigatiebalk met het gele bolletje. Reset de onthouden
-    // positie zodat het bolletje, als je via deze pagina weer naar een subpagina gaat,
-    // niet meer vanaf de vorige subpagina animeert maar gewoon direct op de juiste plek
-    // verschijnt.
-    if (typeof window !== "undefined") sessionStorage.removeItem("navDotLeft");
-  }, []);
-  // Scroll blokkeren zolang de intro speelt, zodat je niet "stiekem" al gescrolld bent
-  // zodra de animatie klaar is.
   useEffect(() => {
-    if (introDone) return;
-    const html = document.documentElement;
-    const prevHtmlOverflow = html.style.overflow;
-    const prevBodyOverflow = document.body.style.overflow;
     window.scrollTo(0, 0);
-    html.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    const blockScroll = () => window.scrollTo(0, 0);
-    window.addEventListener("scroll", blockScroll);
-    return () => {
-      html.style.overflow = prevHtmlOverflow;
-      document.body.style.overflow = prevBodyOverflow;
-      window.removeEventListener("scroll", blockScroll);
-    };
-  }, [introDone]);
-
-  useEffect(() => {
-    if (introDone) {
-      const t = setTimeout(() => setHeroIn(true), 100);
-      return () => clearTimeout(t);
-    }
-  }, [introDone]);
-
-  useEffect(() => {
-    if (introAlreadyPlayed) return;
-    // Logo-animatie: wave 0.1–1s, baubles 0.85–1.7s, wordmark 1.05–1.65s → wipe pas na ~2.2s
+    if (window.location.hash) history.replaceState(null, "", window.location.pathname);
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    const isReload = nav?.type === "reload";
+    const shouldPlay = isReload || !sessionStorage.getItem(INTRO_FLAG);
+    if (!shouldPlay) return;
+    setIntroDone(false);
     const t1 = setTimeout(() => setShowTitle(true), 100);
-    const t2 = setTimeout(() => setShowSubtitle(true), 1200);
-    const t3 = setTimeout(() => setIntroWipe(true), 1800);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, [introAlreadyPlayed]);
-
-  useEffect(() => {
-    setInnerHeight(window.innerHeight);
-    const onResize = () => setInnerHeight(window.innerHeight);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    const t2 = setTimeout(() => setIntroWipe(true), 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrollY(y);
-      if (y > 40) setHasScrolled(true);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const els = document.querySelectorAll("[data-reveal]");
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.getAttribute("data-reveal") ?? "";
-          setVisible(prev => new Set([...prev, id]));
-        }
-      });
-    }, { threshold: 0.15 });
-    els.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-
-  // Eerste 100vh blijft de sectie gepind, daarna schuift het paarse tekstblok erover heen
-  // Geen losse buffer meer: het paarse blok schuift direct mee tijdens de eerste 100vh scroll.
-  const bufferProgress = innerHeight > 0 ? Math.max(0, Math.min(1, scrollY / innerHeight)) : 0;
-  useEffect(() => {
-    if (bufferProgress >= 0.8) setVisible(prev => prev.has("tekst") ? prev : new Set([...prev, "tekst"]));
-  }, [bufferProgress]);
-
-
-
-  const slideIn = (id: string, delay = 0) => ({
-    opacity: visible.has(id) ? 1 : 0,
-    transform: visible.has(id) ? "translateY(0px)" : "translateY(40px)",
-    transition: `opacity 0.7s ease ${delay}s, transform 1.1s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-  });
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    const res = await fetch("/api/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    const data = await res.json();
-    setLoading(false);
-
-    if (!res.ok) {
-      setError(data.error ?? "Er ging iets mis, probeer het opnieuw.");
-      return;
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? "Er ging iets mis."); }
+      else { setSuccess(true); }
+    } catch {
+      setError("Er ging iets mis, probeer het opnieuw.");
     }
-
-    setSubmitted(true);
+    setLoading(false);
   }
 
-  const navLink = {
-    background: "none" as const,
-    border: "none",
-    cursor: "pointer",
-    padding: "8px 12px",
-    fontSize: "14px",
-    fontWeight: 700,
-    color: "#2160D8",
-    fontFamily: "'Inter', sans-serif",
-    borderRadius: "8px",
-    textDecoration: "none",
-    display: "inline-block" as const,
-    whiteSpace: "nowrap" as const,
-  };
-
   return (
-    <main>
-
-      {/* Intro: paars scherm, Festiv vervaagt in, dan wipe omhoog */}
+    <>
+      {/* ── Intro ── */}
       {!introDone && (
-        <div style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 500,
-          pointerEvents: introWipe ? "none" : "auto",
-        }}>
-          {/* Paarse achtergrond — wipes omhoog */}
+        <div style={{ position: "fixed", inset: 0, zIndex: 500, pointerEvents: introWipe ? "none" : "auto" }}>
           <div style={{
-            position: "absolute",
-            inset: 0,
-            background: "#E84C92",
+            position: "absolute", inset: 0, background: C.dark,
             transform: introWipe ? "translateY(-100%)" : "translateY(0)",
-            transition: "transform 0.6s cubic-bezier(0.76,0,0.24,1)",
+            transition: "transform 0.65s cubic-bezier(0.76,0,0.24,1)",
           }}
           onTransitionEnd={() => { if (introWipe) { setIntroDone(true); sessionStorage.setItem(INTRO_FLAG, "1"); } }}>
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
               {INTRO_DOTS.map((s, i) => (
                 <span key={i} style={{
-                  position: "absolute",
-                  top: s.top, left: s.left,
-                  width: s.size, height: s.size,
-                  borderRadius: "50%",
-                  background: s.color === "magenta" ? "#E84C92" : "#FBC02D",
+                  position: "absolute", top: s.top, left: s.left,
+                  width: s.size, height: s.size, borderRadius: "50%",
+                  background: s.color === "magenta" ? C.accent : C.accentAlt,
                   animation: `${s.color === "magenta" ? "dot-breathe-magenta" : "dot-breathe-yellow"} ${s.dur}s ease-in-out ${s.delay}s infinite`,
                 }} />
               ))}
             </div>
           </div>
-
-          {/* Logo + tekst — bovenop paars, fadet weg als wipe start */}
           <div style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            position: "absolute", inset: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
             opacity: introWipe ? 0 : (showTitle ? 1 : 0),
             transition: "opacity 0.5s ease",
             pointerEvents: "none",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 36 }}>
-              <svg width="96" height="96" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ overflow: "visible" }}>
-                <path
-                  d="M7 41 C18 23 27 49 36 32 C42 21 50 25 57 17 C58 20 57 24 53 29 C45 40 36 49 30 41 C24 33 19 39 13 48 C10 47 8 44 7 41 Z"
-                  fill="#2160D8"
-                  style={{ opacity: 0, animation: "wave-appear 0.6s ease 0.2s forwards" }}
-                />
-                <circle cx="19" cy="21" r="4.6" fill="#E84C92" style={{
-                  transformBox: "fill-box", transformOrigin: "center",
-                  animation: "bauble-pop 0.6s ease 0.9s both, bauble-float 3.2s ease-in-out 1.6s infinite",
-                }}/>
-                <circle cx="49" cy="44" r="4.6" fill="#FBC02D" style={{
-                  transformBox: "fill-box", transformOrigin: "center",
-                  animation: "bauble-pop 0.6s ease 1.0s both, bauble-float-inv 3.2s ease-in-out 1.7s infinite",
-                }}/>
-              </svg>
-              <span style={{
-                fontFamily: "'DM Serif Display', serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: "clamp(72px, 12vw, 120px)",
-                color: "#FFFFFF",
-                lineHeight: 1,
-                letterSpacing: "-0.02em",
-                opacity: 0,
-                animation: "wave-appear 0.8s ease 0.2s forwards",
-                willChange: "opacity",
-                transform: "translateZ(0)",
-                paddingLeft: 16,
-              }}>
-                festiv
-              </span>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28, opacity: 0, animation: "wave-appear 0.8s ease 0.3s forwards" }}>
+              <FestivAppIcon size={120} />
             </div>
           </div>
         </div>
       )}
 
-      {/* Nav */}
+      {/* ── Nav ── */}
       <nav style={{
-        position: "fixed",
-        top: 0, left: 0, right: 0,
-        zIndex: 200,
-        padding: "0 40px",
-        height: "64px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        background: "rgba(255,240,246,0.95)",
-        backdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(232,76,146,0.12)",
-        opacity: introDone ? 1 : 0,
-        transition: "opacity 0.6s ease",
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
+        height: 60, padding: "0 40px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        background: "rgba(26,10,30,0.97)", backdropFilter: "blur(16px)",
+        opacity: introDone ? 1 : 0, transition: "opacity 0.6s ease",
         pointerEvents: introDone ? "auto" : "none",
       }}>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: "4px", paddingBottom: "6px" }}>
-          <Link href="/" style={{ textDecoration: "none", marginRight: "16px" }}
-            onClick={e => {
-              // We zijn al op de homepage: Link navigeert dan niet, dus zelf naar boven scrollen.
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7 41 C18 23 27 49 36 32 C42 21 50 25 57 17 C58 20 57 24 53 29 C45 40 36 49 30 41 C24 33 19 39 13 48 C10 47 8 44 7 41 Z" fill="#2160D8"/>
-                  <circle cx="19" cy="21" r="4.6" fill="#E84C92"/>
-                  <circle cx="49" cy="44" r="4.6" fill="#FBC02D"/>
-                </svg>
-                <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 400, fontSize: 26, color: "#1A1A1A", lineHeight: 1, letterSpacing: "-0.01em" }}>festiv</span>
-              </span>
-          </Link>
+        <Link href="/" style={{ textDecoration: "none" }} onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <FestivAppIcon size={36} />
+            <span style={{ fontFamily: "'Gabarito', sans-serif", fontWeight: 800, fontSize: 20, color: "#f3e7cd", lineHeight: 1, letterSpacing: "-0.5px" }}>Festiv</span>
+          </span>
+        </Link>
 
-          <div style={{ position: "relative" }}
-            onMouseEnter={() => setOverFestivOpen(true)}
-            onMouseLeave={() => setOverFestivOpen(false)}>
-            <Link href="/meer-over-festiv" style={navLink}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-              {txt.moreFestiv}
-            </Link>
-            {overFestivOpen && (
-              <div style={{ position: "absolute", top: "100%", left: 0, paddingTop: "8px", background: "transparent", width: "max-content", zIndex: 300 }}>
-                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(232,76,146,0.18)", padding: "6px" }}>
-                  {[
-                    { label: lang === "nl" ? "Zo werkt het" : "How it works", href: "/meer-over-festiv/hoe-werkt-het" },
-                    { label: lang === "nl" ? "Het ontstaan" : "Our story", href: "/meer-over-festiv/het-ontstaan" },
-                  ].map(item => (
-                    <Link key={item.label} href={item.href} style={{ display: "block", padding: "9px 14px", fontSize: "14px", fontWeight: 700, color: "#2160D8", textDecoration: "none", borderRadius: "8px", whiteSpace: "nowrap" as const }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(248,245,240,0.35)")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <Link href="/ervaringen" style={navLink}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
-            onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-            {txt.experiences}
-          </Link>
-
-          <div style={{ position: "relative" }}
-            onMouseEnter={() => setOverOnsOpen(true)}
-            onMouseLeave={() => setOverOnsOpen(false)}>
-            <Link href="/over-ons" style={navLink}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-              {txt.aboutUs}
-            </Link>
-            {overOnsOpen && (
-              <div style={{
-                position: "absolute",
-                top: "100%", left: 0,
-                paddingTop: "8px",
-                background: "transparent",
-                width: "max-content",
-                zIndex: 300,
-              }}>
-                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(232,76,146,0.18)", padding: "6px" }}>
-                {[{ label: txt.ourTeam, href: "/over-ons/ons-team" }, { label: txt.workAt, href: "/over-ons/werken-bij" }].map(item => (
-                  <Link key={item.label} href={item.href} style={{
-                    display: "block",
-                    padding: "9px 14px",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    color: "#2160D8",
-                    textDecoration: "none",
-                    borderRadius: "8px",
-                    whiteSpace: "nowrap" as const,
-                  }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(248,245,240,0.35)")}
-                    onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-                    {item.label}
-                  </Link>
-                ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <Link
-            href={hasScrolled ? "#vragen" : "/vragen"}
-            style={navLink}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
-            onMouseLeave={e => (e.currentTarget.style.background = "none")}
-            onClick={e => {
-              if (hasScrolled) {
-                e.preventDefault();
-                const el = document.getElementById("vragen");
-                if (el) el.scrollIntoView({ behavior: "smooth" });
-              }
-            }}>
-            {txt.faqNav}
-          </Link>
-          <Link href="/contact" style={navLink}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,76,146,0.08)")}
-            onMouseLeave={e => (e.currentTarget.style.background = "none")}>
-            {txt.contact}
-          </Link>
-        </div>
-
-        <div style={{ display: "flex", gap: "10px", alignItems: "center", flexShrink: 0 }}>
-          <div
-            style={{ position: "relative" }}
-            onMouseEnter={() => setLangOpen(true)}
-            onMouseLeave={() => setLangOpen(false)}
-          >
-            <button style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "5px", padding: "6px 2px", opacity: langOpen ? 0.7 : 1, transition: "opacity 0.15s" }}>
-              <GlobeIcon />
-              <ChevronDown />
-            </button>
-            {langOpen && (
-              <div style={{ position: "absolute", top: "100%", right: 0, paddingTop: "6px", zIndex: 300 }}>
-                <div style={{ background: "#FFFFFF", borderRadius: "12px", boxShadow: "0 8px 32px rgba(232,76,146,0.18)", padding: "6px", width: "140px" }}>
-                  {[{ label: "Nederlands", value: "nl" }, { label: "English", value: "en" }].map(opt => (
-                    <button key={opt.value} onClick={() => { if (lang !== opt.value) toggle(); setLangOpen(false); }} style={{
-                      display: "block", width: "100%", textAlign: "left", padding: "9px 14px", fontSize: "14px",
-                      fontWeight: lang === opt.value ? 700 : 500, color: "#2160D8",
-                      background: lang === opt.value ? "rgba(248,245,240,0.35)" : "none",
-                      border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "'Inter', sans-serif",
-                    }}
-                      onMouseEnter={e => { if (lang !== opt.value) e.currentTarget.style.background = "rgba(248,245,240,0.2)"; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = lang === opt.value ? "rgba(248,245,240,0.35)" : "none"; }}>
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          <a href="#download" style={{
-            background: "#FBC02D",
-            color: "#2160D8",
-            padding: "10px 22px",
-            borderRadius: "100px",
-            fontSize: "14px",
-            fontWeight: 700,
-            textDecoration: "none",
-          }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-            onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-            {txt.download}
-          </a>
+        <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+          {txt.navLinks.map(l => (
+            <a key={l.label} href={l.href} style={{ color: "rgba(252,244,236,0.7)", textDecoration: "none", fontSize: 14, fontWeight: 500 }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#FCF4EC")}
+              onMouseLeave={e => (e.currentTarget.style.color = "rgba(252,244,236,0.7)")}>
+              {l.label}
+            </a>
+          ))}
+          <button
+            onClick={() => setLang(lang === "nl" ? "en" : "nl")}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(252,244,236,0.55)", fontSize: 13, fontWeight: 500, padding: 0 }}>
+            {lang === "nl" ? "EN" : "NL"}
+          </button>
           <a href="#aanmelden" style={{
-            background: "#E84C92",
-            color: "#FFFFFF",
-            padding: "10px 22px",
-            borderRadius: "100px",
-            fontSize: "14px",
-            fontWeight: 700,
-            textDecoration: "none",
-          }}
-            onMouseEnter={e => (e.currentTarget.style.opacity = "0.8")}
-            onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
-            {txt.signup}
+            background: C.cream, color: C.dark,
+            padding: "9px 22px", borderRadius: 100,
+            fontSize: 13, fontWeight: 700, textDecoration: "none",
+            display: "inline-block",
+          }}>
+            {txt.download}
           </a>
         </div>
       </nav>
 
-      {/* Hero + Telefoon: sticky container. Geen losse buffer meer — het paarse blok schuift al tijdens de eerste 100vh scroll over de hero heen. Hoogte = 100vh (scroll-tied slide) + 100vh (sticky scroll-runway) = 200vh. */}
-      <div style={{ height: "200vh", position: "relative" }}>
-        <div style={{ position: "sticky", top: 0, height: "100vh", background: "#FCF8F0", overflow: "hidden" }}>
-
-          {/* Vak 1, 2, 3 — verschijnen zodra de intro klaar is, vervagen terwijl het paarse blok erover heen schuift */}
-          <div style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 10,
-            padding: "100px 40px 40px",
-            opacity: 1 - Math.min(1, bufferProgress / 0.6),
-            pointerEvents: bufferProgress > 0.05 ? "none" : "auto",
-          }}>
-            <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", height: "calc(100vh - 140px)" }}>
-
-              {/* Vak 1: tagline met TM */}
-              <div style={{
-                position: "absolute",
-                top: "340px",
-                left: "-60px",
-                maxWidth: "760px",
-                opacity: heroIn ? 1 : 0,
-                transform: heroIn ? "translateY(0)" : "translateY(20px)",
-                transition: "opacity 0.8s ease 0.1s, transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s",
-              }}>
-                <p style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "clamp(24px, 3vw, 36px)",
-                  fontWeight: 700,
-                  color: "#2160D8",
-                  lineHeight: 1.2,
-                  letterSpacing: "-0.5px",
-                }}>
-                  {txt.tagline1}
-                  <br />
-                  {txt.tagline2}
-                  <sup style={{
-                    fontSize: "0.28em",
-                    fontWeight: 700,
-                    letterSpacing: "0.5px",
-                    color: "#2160D8",
-                    opacity: 0.5,
-                    marginLeft: "2px",
-                  }}>TM</sup>
-                </p>
-              </div>
-
-              {/* Vak 2: getekend pijltje — vlak onder/naast de tekst */}
-              <div style={{
-                position: "absolute",
-                top: "440px",
-                left: "520px",
-                opacity: heroIn ? 1 : 0,
-                transition: "opacity 0.4s ease 0.2s",
-              }}>
-                <svg width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    {/* Lichte turbulentie + verplaatsing op de lijnen, voor een krijt/potlood-achtige, niet-perfecte streek */}
-                    <filter id="chalk-arrow" x="-30%" y="-30%" width="160%" height="160%">
-                      <feTurbulence type="fractalNoise" baseFrequency="0.06 0.18" numOctaves="2" seed="4" result="noise" />
-                      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" xChannelSelector="R" yChannelSelector="G" />
-                    </filter>
-                  </defs>
-                  <g filter="url(#chalk-arrow)">
-                  {/* Lichte tweede lijn iets verschoven, voor een handgetekend effect */}
-                  <path
-                    d="M6 12 C 50 4, 90 60, 150 56 C 168 54.5, 184 48, 198 40"
-                    stroke="#FBC02D"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    fill="none"
-                    opacity={0.6}
-                    pathLength={1}
-                    style={{
-                      strokeDasharray: 1,
-                      strokeDashoffset: heroIn ? 0 : 1,
-                      transition: "stroke-dashoffset 1.1s cubic-bezier(0.65,0,0.35,1) 0.65s",
-                    }}
-                  />
-                  {/* Hoofdlijn — licht golvend, niet perfect recht */}
-                  <path
-                    d="M8 16 C 52 7, 92 64, 152 60 C 170 58.5, 186 51, 200 43"
-                    stroke="#2160D8"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    fill="none"
-                    pathLength={1}
-                    style={{
-                      strokeDasharray: 1,
-                      strokeDashoffset: heroIn ? 0 : 1,
-                      transition: "stroke-dashoffset 1.1s cubic-bezier(0.65,0,0.35,1) 0.7s",
-                    }}
-                  />
-                  {/* Duidelijke pijlpunt */}
-                  <path
-                    d="M200 43 L182 38 M200 43 L191 59"
-                    stroke="#2160D8"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                    pathLength={1}
-                    style={{
-                      strokeDasharray: 1,
-                      strokeDashoffset: heroIn ? 0 : 1,
-                      transition: "stroke-dashoffset 0.35s ease 1.8s",
-                    }}
-                  />
-                  </g>
-                </svg>
-              </div>
-
-              {/* Vak 3: festivalfoto i.p.v. telefoon-mockup */}
-              <div style={{
-                position: "absolute",
-                top: "50%",
-                right: "0px",
-                opacity: heroIn ? 1 : 0,
-                transform: heroIn ? "translateY(-50%)" : "translateY(-30%)",
-                transition: "opacity 0.9s ease 0.3s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s",
-              }}>
-                <div style={{ width: "390px", height: "520px", borderRadius: "28px", overflow: "hidden", boxShadow: "0 60px 120px rgba(10,21,32,0.35)" }}>
-                  <img src="/festival-crowd.png" alt="Festivalpubliek" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          {/* Tekstblok — schuift over de (lege) sectie heen terwijl je verder scrollt */}
-          <div style={{
-            position: "absolute",
-            inset: 0,
-            background: "#E84C92",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "20px",
-            padding: "60px 80px 60px 180px",
-            zIndex: 20,
-            transform: `translateY(${(1 - bufferProgress) * 100}%)`,
-            pointerEvents: bufferProgress >= 1 ? "auto" : "none",
-          }}>
-            <div style={{
-              width: "520px",
-              height: "600px",
-              flexShrink: 0,
-              borderRadius: "24px",
-              overflow: "hidden",
-              opacity: visible.has("tekst") ? 1 : 0,
-              transform: visible.has("tekst") ? "translateY(0)" : "translateY(20px)",
-              transition: "opacity 0.8s ease, transform 0.9s cubic-bezier(0.16,1,0.3,1)",
-              boxShadow: "0 40px 80px rgba(0,0,0,0.25)",
+      {/* ── Hero ── */}
+      <section style={{
+        background: C.dark, minHeight: "100vh",
+        display: "flex", flexDirection: "column", justifyContent: "center",
+        padding: "120px 80px 80px",
+        opacity: introDone ? 1 : 0, transition: "opacity 0.6s ease 0.1s",
+      }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+          <div>
+            <h1 style={{
+              fontFamily: "'Playfair Display', serif", fontWeight: 800,
+              fontSize: "clamp(44px, 5vw, 72px)", color: C.textLight,
+              lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: 28,
             }}>
-              <img src="/festival-couple.png" alt="Stel op een festival" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
-
-            <div style={{ maxWidth: "500px", paddingTop: "0px" }}>
-              <p style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(28px, 2.8vw, 38px)",
-                fontWeight: 700,
-                letterSpacing: "-0.5px",
-                color: "#FFFFFF",
-                lineHeight: 1.2,
-                margin: "0 0 24px 0",
-                opacity: visible.has("tekst") ? 1 : 0,
-                transition: "opacity 0.6s ease 0s",
-              }}>
-                Je volgende date staat al op de gastenlijst.
-              </p>
-              <p style={{
-                fontFamily: "'Poppins', sans-serif",
-                fontSize: "clamp(14px, 1.4vw, 17px)",
-                fontWeight: 300,
-                color: "rgba(255,255,255,0.7)",
-                lineHeight: 1.7,
-                textAlign: "left",
-                margin: 0,
-              }}>
-                {[
-                  { text: txt.line1, delay: 0 },
-                  { text: txt.line2, delay: 0.15 },
-                  { text: txt.line3, delay: 0.3 },
-                ].map(({ text, delay }, i) => (
-                  <span key={i}>
-                    {text.split(" ").map((word, wi) => (
-                      <span key={wi} style={{
-                        display: "inline-block",
-                        opacity: visible.has("tekst") ? 1 : 0,
-                        transform: visible.has("tekst") ? "translateY(0px)" : "translateY(10px)",
-                        transition: `opacity 0.6s ease ${delay}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-                        marginRight: "0.28em",
-                      }}>
-                        {word}
-                      </span>
-                    ))}
-                  </span>
-                ))}
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Rest van de pagina */}
-      <div style={{ position: "relative", zIndex: 20 }}>
-
-        {/* Zo werkt het + Counter */}
-        <section style={{ background: "#FCF8F0", padding: "100px 24px" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", display: "grid", gridTemplateColumns: "480px 1fr 280px", gap: "60px", alignItems: "start" }}>
-
-            {/* Links: titel + blokken */}
-            <div>
-              <h2 style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "clamp(32px, 5vw, 52px)",
-                fontWeight: 700,
-                letterSpacing: "-1px",
-                marginBottom: "40px",
-                color: "#2160D8",
-              }}>
-                {txt.howTitle}
-              </h2>
-
-              <div data-reveal="blokken" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                {txt.steps.map((item, i) => (
-                  <div key={i} style={{
-                    background: "#E84C92",
-                    borderRadius: "20px",
-                    padding: "28px 28px",
-                    textAlign: "left",
-                    position: "relative",
-                    ...slideIn("blokken", i * 0.55),
-                  }}>
-                    <div style={{ width: "32px", height: "3px", background: "#FBC02D", borderRadius: "2px", marginBottom: "16px" }} />
-                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "19px", fontWeight: 700, marginBottom: "8px", color: "#FFFFFF" }}>
-                      {item.title}
-                    </h3>
-                    <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.6, fontSize: "16px" }}>
-                      {item.desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Rechts: 500+ */}
-            <div data-reveal="counter" style={{
-              paddingTop: "60px", paddingLeft: "80px",
-              opacity: visible.has("counter") ? 1 : 0,
-              transform: visible.has("counter") ? "translateX(0)" : "translateX(30px)",
-              transition: "opacity 0.7s ease 0.15s, transform 1.1s cubic-bezier(0.16,1,0.3,1) 0.15s",
-            }}>
-              <div style={{
-                fontSize: "clamp(100px, 12vw, 150px)",
-                fontFamily: "'Playfair Display', serif",
-                fontWeight: 800,
-                color: "#2160D8",
-                letterSpacing: "-5px",
-                lineHeight: 1,
-                marginBottom: "16px",
-              }}>
-                500+
-              </div>
-              <p style={{ fontSize: "26px", color: "#2160D8", fontWeight: 800, marginBottom: "12px", letterSpacing: "-0.5px" }}>
-                {txt.counterSub}
-              </p>
-              <p style={{ fontSize: "16px", color: "#2160D8", lineHeight: 1.6, fontWeight: 700 }}>
-                {txt.counterDesc} <span style={{ color: "#FBC02D", fontWeight: 800 }}>{txt.counterHighlight}</span>
-              </p>
-            </div>
-
-            {/* Foto's — dating app profielkaarten */}
-            <div style={{
-              position: "relative",
-              height: "680px",
-              marginTop: "20px",
-            }}>
-              {/* Fabian — voor, iets lager */}
-              <div
-                data-reveal="foto2"
-                style={{
-                  position: "absolute",
-                  top: "280px",
-                  left: "10px",
-                  width: "220px",
-                  height: "320px",
-                  borderRadius: "24px",
-                  overflow: "hidden",
-                  border: "4px solid #FFFFFF",
-                  boxShadow: "0 28px 60px rgba(42,23,88,0.22)",
-                  zIndex: 3,
-                  transform: visible.has("foto2")
-                    ? "rotate(-4deg) translateY(0px)"
-                    : "rotate(-4deg) translateY(50px)",
-                  opacity: visible.has("foto2") ? 1 : 0,
-                  transition: "opacity 0.4s ease 0.15s, transform 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s",
-                }}
-              >
-                <img
-                  src="/fabian.png"
-                  alt="Fabian"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 25%" }}
-                />
-                <div style={{
-                  position: "absolute",
-                  top: 0, left: 0, right: 0,
-                  padding: "18px 18px 48px",
-                  background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%)",
-                }}>
-                  <p style={{ color: "#FFFFFF", fontSize: "17px", fontWeight: 700, fontFamily: "'Poppins', sans-serif", letterSpacing: "-0.3px" }}>
-                    Fabian, 26
-                  </p>
-                </div>
-              </div>
-
-              {/* Donna — achter */}
-              <div
-                data-reveal="foto"
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  width: "240px",
-                  height: "340px",
-                  borderRadius: "24px",
-                  overflow: "hidden",
-                  border: "4px solid #FFFFFF",
-                  boxShadow: "0 28px 60px rgba(42,23,88,0.22)",
-                  zIndex: 2,
-                  transform: visible.has("foto")
-                    ? "rotate(5deg) translateY(0px)"
-                    : "rotate(5deg) translateY(50px)",
-                  opacity: visible.has("foto") ? 1 : 0,
-                  transition: "opacity 0.4s ease 0s, transform 0.6s cubic-bezier(0.16,1,0.3,1) 0s",
-                }}
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80"
-                  alt="Donna lacht"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
-                />
-                <div style={{
-                  position: "absolute",
-                  top: 0, left: 0, right: 0,
-                  padding: "18px 18px 48px",
-                  background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%)",
-                }}>
-                  <p style={{ color: "#FFFFFF", fontSize: "17px", fontWeight: 700, fontFamily: "'Poppins', sans-serif", letterSpacing: "-0.3px" }}>
-                    Donna, 28
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* FAQ + Aanmelden wrapper */}
-        <div style={{ position: "relative", background: "#FCF8F0" }}>
-
-        {/* FAQ */}
-        <section id="vragen" style={{ background: "transparent", padding: "0 24px 100px", position: "relative", zIndex: 1 }} onClick={() => setOpenFaq(null)}>
-          <div style={{ maxWidth: "920px", margin: "0 auto", textAlign: "center" }}>
-            <div style={{ background: "#E84C92", borderRadius: "24px", padding: "48px 48px 64px", display: "flex", flexDirection: "column" }}>
-            <h2 style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(32px, 5vw, 52px)",
-              fontWeight: 700,
-              letterSpacing: "-1px",
-              color: "#FFFFFF",
-              marginBottom: "32px",
-            }}>
-              {txt.faqTitle}
-            </h2>
-              {txt.faqItems.map((item, i) => (
-                <div key={i} style={{ borderTop: i === 0 ? "1.5px solid rgba(255,255,255,0.12)" : undefined }}>
-                  <button
-                    onClick={e => { e.stopPropagation(); setOpenFaq(openFaq === i ? null : i); }}
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "22px 0",
-                      background: "none",
-                      border: "none",
-                      borderBottom: "1.5px solid rgba(255,255,255,0.12)",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      gap: "16px",
-                    }}
-                  >
-                    <span style={{
-                      fontFamily: "'Poppins', sans-serif",
-                      fontSize: "17px",
-                      fontWeight: 600,
-                      color: "#FFFFFF",
-                    }}>
-                      {item.q}
-                    </span>
-                    <svg
-                      width="16" height="16" viewBox="0 0 16 16" fill="none"
-                      style={{
-                        flexShrink: 0,
-                        transform: openFaq === i ? "rotate(180deg)" : "rotate(0deg)",
-                        transition: "transform 0.25s ease",
-                      }}
-                    >
-                      <path d="M2 5L8 11L14 5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  {openFaq === i && (
-                    <div style={{
-                      padding: "20px 0 28px",
-                      borderBottom: "1.5px solid rgba(255,255,255,0.12)",
-                      marginTop: "-1.5px",
-                    }}>
-                      {item.a === null ? (
-                        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-                          <p style={{ fontSize: "16px", lineHeight: 1.75, color: "rgba(255,255,255,0.9)", fontFamily: "'Inter', sans-serif", textAlign: "left" }}>
-                            {lang === "nl" ? "Geen zorgen. Vraag het ons via" : "No worries. Just ask us via"}
-                          </p>
-                          <Link href="/contact" style={{
-                            display: "inline-block",
-                            background: "#FBC02D",
-                            color: "#2160D8",
-                            padding: "10px 22px",
-                            borderRadius: "100px",
-                            fontSize: "14px",
-                            fontWeight: 700,
-                            textDecoration: "none",
-                            fontFamily: "'Inter', sans-serif",
-                            flexShrink: 0,
-                          }}>
-                            Contact
-                          </Link>
-                        </div>
-                      ) : (
-                        <p style={{
-                          fontSize: "16px",
-                          lineHeight: 1.75,
-                          color: "rgba(255,255,255,0.9)",
-                          fontFamily: "'Inter', sans-serif",
-                          maxWidth: "640px",
-                          textAlign: "left",
-                        }}>
-                          {item.a}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Aanmelden */}
-        <section id="aanmelden" style={{ position: "relative", padding: "240px 24px 120px", textAlign: "center", zIndex: 1, background: "transparent" }}>
-          <div style={{ maxWidth: "520px", margin: "0 auto", background: "#E84C92", borderRadius: "24px", padding: "48px 40px", position: "relative", zIndex: 2 }}>
-            <h2 style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(32px, 5vw, 48px)",
-              fontWeight: 700,
-              letterSpacing: "-1px",
-              color: "#FFFFFF",
-              lineHeight: 1.1,
-              marginBottom: "16px",
-            }}>
-              {txt.signupTitle}
-            </h2>
-            <p style={{ fontSize: "17px", color: "#FFFFFF", fontWeight: 300, lineHeight: 1.6, marginBottom: "40px" }}>
-              {txt.signupSub}
+              {txt.heroTitle}
+            </h1>
+            <p style={{ fontSize: 18, color: C.textMuted, lineHeight: 1.7, maxWidth: 480, marginBottom: 48 }}>
+              {txt.heroSub}
             </p>
+            <a href="#aanmelden" style={{
+              display: "inline-block",
+              background: C.cream, color: C.dark,
+              padding: "16px 40px", borderRadius: 100,
+              fontSize: 16, fontWeight: 700, textDecoration: "none",
+              boxShadow: "0 4px 20px rgba(243,231,205,0.2)",
+            }}>
+              {txt.download}
+            </a>
+          </div>
 
-            {!submitted ? (
-              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {/* Profiel-kaartjes stapel */}
+          <div style={{ position: "relative", height: 420, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", top: 20, left: 40, transform: "rotate(-4deg)", opacity: 0.7 }}>
+              <ProfileCard name="Tim" age={25} festivals={["Pinkpop", "Awakenings", "Verknipt"]} color="#FBC02D" photo="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=440&q=80" photoPosition="center 20%" />
+            </div>
+            <div style={{ position: "absolute", top: 60, right: 20, transform: "rotate(3deg)", opacity: 0.85 }}>
+              <ProfileCard name="Sanne" age={26} festivals={["Dekmantel", "DGTL"]} color="#2160D8" photo="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=440&q=80" photoPosition="center 30%" />
+            </div>
+            <div style={{ position: "relative", zIndex: 2 }}>
+              <ProfileCard name="Lisa" age={24} festivals={["Lowlands", "Pinkpop"]} color="#E84C92" photo="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=440&q=80" photoPosition="center 50%" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Hoe werkt het intro ── */}
+      <section id="hoe" style={{ background: C.cream, padding: "100px 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(36px, 4vw, 56px)", color: C.text, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+            {txt.howTitle}
+          </h2>
+          <p style={{ fontSize: 18, color: C.textMutedDark, lineHeight: 1.75, paddingTop: 8 }}>
+            {txt.howSub}
+          </p>
+        </div>
+      </section>
+
+      {/* ── Stap 1: festivals toevoegen ── */}
+      <section style={{ background: C.dark, padding: "100px 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.accent, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Stap 1</div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(32px, 3.5vw, 52px)", color: C.textLight, lineHeight: 1.1, marginBottom: 24 }}>
+              {txt.step1Title}
+            </h2>
+            <p style={{ fontSize: 18, color: C.textMuted, lineHeight: 1.75 }}>
+              {txt.step1Sub}
+            </p>
+          </div>
+          {/* Festival-lijst mockup */}
+          <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 24, padding: 28 }}>
+            {["Pinkpop", "Lowlands", "Awakenings", "Dekmantel", "DGTL", "Verknipt"].map((f, i) => (
+              <div key={f} style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "14px 0",
+                borderBottom: i < 5 ? "1px solid rgba(255,255,255,0.08)" : "none",
+              }}>
+                <span style={{ color: C.textLight, fontSize: 16, fontWeight: 500 }}>{f}</span>
+                <div style={{
+                  width: 28, height: 28, borderRadius: "50%",
+                  background: i < 3 ? C.accent : "rgba(255,255,255,0.1)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 13, color: "#fff",
+                }}>
+                  {i < 3 ? "✓" : "+"}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stap 2: swipe & match ── */}
+      <section style={{ background: C.cream, padding: "100px 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+          {/* Match-kaartje mockup */}
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ position: "relative", width: 260 }}>
+              <ProfileCard name="Emma" age={25} festivals={["Lowlands", "Pinkpop", "DGTL"]} color="#E84C92" photo="https://images.unsplash.com/photo-1524638431109-93d95c968f03?w=440&q=80" />
+              <div style={{
+                position: "absolute", bottom: -16, left: "50%", transform: "translateX(-50%)",
+                display: "flex", gap: 16,
+              }}>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", boxShadow: "0 4px 16px rgba(0,0,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>✕</div>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", background: C.accent, boxShadow: "0 4px 16px rgba(232,76,146,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>♥</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.accent, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Stap 2</div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(32px, 3.5vw, 52px)", color: C.text, lineHeight: 1.1, marginBottom: 24 }}>
+              {txt.step2Title}
+            </h2>
+            <p style={{ fontSize: 18, color: C.textMutedDark, lineHeight: 1.75 }}>
+              {txt.step2Sub}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stap 3: ontmoet elkaar ── */}
+      <section style={{ background: C.dark, padding: "100px 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.accent, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Stap 3</div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(32px, 3.5vw, 52px)", color: C.textLight, lineHeight: 1.1, marginBottom: 24 }}>
+              {txt.step3Title}
+            </h2>
+            <p style={{ fontSize: 18, color: C.textMuted, lineHeight: 1.75 }}>
+              {txt.step3Sub}
+            </p>
+          </div>
+          {/* Chat mockup */}
+          <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 24, padding: 28, display: "flex", flexDirection: "column", gap: 16 }}>
+            {[
+              { me: false, text: "Hey! Ik ga ook naar Pinkpop zaterdag 🎉" },
+              { me: true,  text: "Echt?! Ik ook, bij welk podium begin je?" },
+              { me: false, text: "Mainstage om 14u, daarna Greenhouse" },
+              { me: true,  text: "Perfect, zien we elkaar bij de ingang? 🙌" },
+            ].map((m, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: m.me ? "flex-end" : "flex-start" }}>
+                <div style={{
+                  background: m.me ? C.accent : "rgba(255,255,255,0.12)",
+                  color: "#fff", borderRadius: m.me ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+                  padding: "10px 16px", fontSize: 14, maxWidth: "75%", lineHeight: 1.5,
+                }}>
+                  {m.text}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section style={{ background: C.cream, padding: "100px 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(36px, 4vw, 56px)", color: C.text, lineHeight: 1.1, letterSpacing: "-0.02em" }}>
+            {txt.featuresTitle}
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 28, paddingTop: 8 }}>
+            {txt.features.map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 20 }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: C.dark, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg viewBox="0 0 24 24" width={20} height={20} fill="none" stroke="#f3e7cd" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                </div>
+                <p style={{ fontSize: 17, color: C.textMutedDark, lineHeight: 1.6, paddingTop: 10 }}>{f.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stats ── */}
+      <section style={{ background: C.dark, padding: "80px 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-around", alignItems: "center", flexWrap: "wrap", gap: 40 }}>
+          {txt.statsItems.map((s, i) => (
+            <div key={i} style={{ textAlign: "center" }}>
+              <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(40px, 5vw, 64px)", color: C.textLight, lineHeight: 1 }}>{s.num}</div>
+              <div style={{ fontSize: 15, color: C.textMuted, marginTop: 8 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA / Aanmelden ── */}
+      <section id="aanmelden" style={{ background: C.cream, padding: "120px 80px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+          <div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(36px, 4vw, 60px)", color: C.text, lineHeight: 1.08, letterSpacing: "-0.02em", marginBottom: 20 }}>
+              {txt.ctaTitle}
+            </h2>
+            <p style={{ fontSize: 18, color: C.textMutedDark, lineHeight: 1.7 }}>
+              {txt.ctaSub}
+            </p>
+          </div>
+          <div>
+            {success ? (
+              <div style={{ textAlign: "center", padding: "40px 0" }}>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 28, color: C.text, marginBottom: 8 }}>{txt.successTitle}</h3>
+                <p style={{ color: C.textMutedDark }}>{txt.successSub}</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <input
-                  type="email"
-                  name="email"
-                  required
+                  type="email" required
                   placeholder={txt.placeholder}
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   style={{
-                    width: "100%",
-                    padding: "20px 24px",
-                    borderRadius: "16px",
-                    border: "2px solid rgba(248,245,240,0.25)",
-                    background: "rgba(248,245,240,0.08)",
-                    fontSize: "17px",
-                    color: "#FFFFFF",
-                    outline: "none",
-                    transition: "border-color 0.2s",
-                    fontFamily: "'Inter', sans-serif",
+                    background: "#fff", border: "1.5px solid rgba(42,23,88,0.15)",
+                    borderRadius: 16, padding: "18px 20px",
+                    fontSize: 16, color: C.text, outline: "none",
+                    fontFamily: "inherit",
                   }}
-                  onFocus={e => (e.currentTarget.style.borderColor = "#FCF8F0")}
-                  onBlur={e => (e.currentTarget.style.borderColor = "rgba(248,245,240,0.25)")}
                 />
-
-                {error && <p style={{ color: "#FBC02D", fontSize: "14px", fontWeight: 600 }}>{error}</p>}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  style={{
-                    background: loading ? "rgba(255,209,102,0.5)" : "#FBC02D",
-                    color: "#2160D8",
-                    padding: "20px",
-                    borderRadius: "16px",
-                    fontSize: "16px",
-                    fontWeight: 700,
-                    border: "none",
-                    cursor: loading ? "not-allowed" : "pointer",
-                    transition: "opacity 0.2s",
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                  onMouseEnter={e => { if (!loading) e.currentTarget.style.opacity = "0.9"; }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
-                >
-                  {loading ? "..." : txt.signupBtn}
-                </button>
-
-                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.35)" }}>
-                  {txt.noSpam}
-                </p>
-              </form>
-            ) : (
-              <div style={{
-                background: "rgba(232,76,146,0.08)",
-                border: "1px solid rgba(232,76,146,0.18)",
-                borderRadius: "24px",
-                padding: "48px 40px",
-              }}>
-                <div style={{
-                  width: "56px", height: "56px",
-                  borderRadius: "50%",
-                  background: "#FBC02D",
-                  margin: "0 auto 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "22px",
-                  color: "#2160D8",
-                  fontWeight: 700,
+                {error && <p style={{ color: C.accent, fontSize: 14 }}>{error}</p>}
+                <button type="submit" disabled={loading} style={{
+                  background: C.dark, color: C.textLight,
+                  border: "none", borderRadius: 16, padding: "18px 20px",
+                  fontSize: 16, fontWeight: 700, cursor: loading ? "wait" : "pointer",
+                  opacity: loading ? 0.6 : 1, fontFamily: "inherit",
                 }}>
-                  ✓
-                </div>
-                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "28px", fontWeight: 700, marginBottom: "12px", color: "#2160D8" }}>
-                  {txt.successTitle}
-                </h3>
-                <p style={{ color: "rgba(42,23,88,0.6)", lineHeight: 1.6 }}>
-                  {txt.successSub}
-                </p>
-              </div>
+                  {loading ? "…" : txt.signupBtn}
+                </button>
+                <p style={{ fontSize: 13, color: C.textMutedDark, textAlign: "center" }}>{txt.noSpam}</p>
+              </form>
             )}
           </div>
-        </section>
+        </div>
+      </section>
 
-        </div>{/* end FAQ + Aanmelden wrapper */}
-
-        {/* Footer */}
-        <footer style={{ background: "#E84C92", padding: "32px 40px 40px" }}>
-          <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "40px" }}>
-
-            {/* Links: logo + copyright */}
-            <div>
-              <div style={{ marginBottom: "12px" }}>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                  <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 41 C18 23 27 49 36 32 C42 21 50 25 57 17 C58 20 57 24 53 29 C45 40 36 49 30 41 C24 33 19 39 13 48 C10 47 8 44 7 41 Z" fill="#FCF8F0"/>
-                    <circle cx="19" cy="21" r="4.6" fill="#FBC02D"/>
-                    <circle cx="49" cy="44" r="4.6" fill="#E84C92"/>
-                  </svg>
-                  <span style={{ fontFamily: "'DM Serif Display', serif", fontStyle: "italic", fontWeight: 400, fontSize: 22, color: "#FCF8F0", lineHeight: 1, letterSpacing: "-0.01em" }}>festiv</span>
-                </span>
-              </div>
-              <p style={{ opacity: 0.55, fontSize: "13px", color: "#FFFFFF" }}>
-                {txt.footerCopy}
-              </p>
-            </div>
-
-            {/* Rechts: navigatielinks + socials */}
-            <div style={{ display: "flex", gap: "48px", flexWrap: "wrap" }}>
-              <div>
-                <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "2px", color: "#FFFFFF", opacity: 0.4, marginBottom: "12px" }}>FESTIV</p>
-                {[
-                  { label: txt.moreFestiv, href: "/meer-over-festiv" },
-                  { label: txt.experiences, href: "/ervaringen" },
-                ].map(item => (
-                  <a key={item.href} href={item.href} style={{ display: "block", fontSize: "14px", fontWeight: 600, color: "#FFFFFF", textDecoration: "none", marginBottom: "8px", opacity: 0.7 }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = "0.7")}>
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-              <div>
-                <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "2px", color: "#FFFFFF", opacity: 0.4, marginBottom: "12px" }}>{lang === "nl" ? "BEDRIJF" : "COMPANY"}</p>
-                {[
-                  { label: txt.aboutUs, href: "/over-ons" },
-                  { label: txt.ourTeam, href: "/over-ons/ons-team" },
-                  { label: txt.workAt, href: "/over-ons/werken-bij" },
-                  { label: txt.contact, href: "/contact" },
-                ].map(item => (
-                  <a key={item.href} href={item.href} style={{ display: "block", fontSize: "14px", fontWeight: 600, color: "#FFFFFF", textDecoration: "none", marginBottom: "8px", opacity: 0.7 }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = "0.7")}>
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-
-              {/* Socials */}
-              <div>
-                <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "2px", color: "#FFFFFF", opacity: 0.4, marginBottom: "12px" }}>{lang === "nl" ? "VOLG ONS OP" : "FOLLOW US ON"}</p>
-                <div style={{ display: "flex", gap: "14px", alignItems: "center" }}>
-                {[
-                  { label: "Instagram", href: "https://instagram.com/festivapp", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },
-                  { label: "TikTok", href: "https://tiktok.com/@festivapp", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.77a4.85 4.85 0 0 1-1.01-.08z"/></svg> },
-                  { label: "X", href: "https://x.com/festivapp", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
-                  { label: "LinkedIn", href: "https://linkedin.com/company/festivapp", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg> },
-                ].map(item => (
-                  <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", color: "#FFFFFF", textDecoration: "none", opacity: 0.7 }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = "0.7")}>
-                    {item.icon}
-                  </a>
-                ))}
+      {/* ── FAQ ── */}
+      <section id="vragen" style={{ background: C.dark, padding: "100px 80px" }} onClick={() => setOpenFaq(null)}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800, fontSize: "clamp(36px, 4vw, 56px)", color: C.textLight, marginBottom: 60, letterSpacing: "-0.02em" }}>
+            {txt.faqTitle}
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {txt.faqItems.map((item, i) => (
+              <div key={i}
+                onClick={e => { e.stopPropagation(); setOpenFaq(openFaq === i ? null : i); }}
+                style={{ borderTop: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", padding: "28px 0" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 24 }}>
+                  <span style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 20, color: C.textLight, lineHeight: 1.3 }}>{item.q}</span>
+                  <span style={{ color: C.accent, fontSize: 22, flexShrink: 0, transition: "transform 0.2s", transform: openFaq === i ? "rotate(45deg)" : "none" }}>+</span>
                 </div>
+                {openFaq === i && item.a && (
+                  <p style={{ color: C.textMuted, fontSize: 16, lineHeight: 1.75, marginTop: 16, maxWidth: 700 }}>{item.a}</p>
+                )}
               </div>
-            </div>
-
+            ))}
+            <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }} />
           </div>
-        </footer>
+        </div>
+      </section>
 
-      </div>{/* einde rest */}
-    </main>
+      {/* ── Footer ── */}
+      <footer style={{ background: C.dark, borderTop: "1px solid rgba(255,255,255,0.08)", padding: "48px 80px 56px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 32 }}>
+          <div>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+              <FestivAppIcon size={32} />
+              <span style={{ fontFamily: "'Gabarito', sans-serif", fontWeight: 800, fontSize: 18, color: "#f3e7cd", letterSpacing: "-0.5px" }}>Festiv</span>
+            </span>
+            <p style={{ fontSize: 13, color: C.textMuted, maxWidth: 280, lineHeight: 1.6 }}>{txt.footerCopy}</p>
+          </div>
+          <div style={{ display: "flex", gap: 48 }}>
+            {txt.footerLinks.map(l => (
+              <Link key={l.label} href={l.href} style={{ color: C.textMuted, textDecoration: "none", fontSize: 14, fontWeight: 500 }}
+                onMouseEnter={e => (e.currentTarget.style.color = "#FCF4EC")}
+                onMouseLeave={e => (e.currentTarget.style.color = C.textMuted)}>
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }
