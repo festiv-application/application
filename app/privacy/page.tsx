@@ -65,7 +65,7 @@ export default function PrivacyPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
 
           <Section id="over-ons" title="1. Over ons">
-            <p>Festiv wordt aangeboden door <strong>Festiv VoF</strong>, gevestigd in Nederland. Festiv is een festival-datingplatform waarmee gebruikers mensen kunnen ontmoeten die naar dezelfde festivals en evenementen gaan.</p>
+            <p>Festiv wordt aangeboden door <strong>Festiv vof</strong>, gevestigd in Nederland. Festiv is een festival-datingplatform waarmee gebruikers mensen kunnen ontmoeten die naar dezelfde festivals en evenementen gaan.</p>
             <p>We passen de AVG (GDPR) toe als standaard voor alle gebruikers, ongeacht waar u zich bevindt.</p>
             <Table rows={[
               ["Algemene privacyvragen", "privacy@festiv.app"],
