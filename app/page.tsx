@@ -123,7 +123,7 @@ const translations = {
     features: [
       { icon: "", text: "Voor festivals én kleinere events" },
       { icon: "", text: "Romantisch, vrienden of gezelschap" },
-      { icon: "", text: "Geverifieerde profielen" },
+      { icon: "", text: "Veilig: blokkeren & rapporteren" },
       { icon: "", text: "Matcht op basis van je agenda" },
       { icon: "", text: "Gratis te gebruiken" },
     ],
@@ -176,7 +176,7 @@ const translations = {
     features: [
       { icon: "", text: "For festivals and smaller events" },
       { icon: "", text: "Romantic, friends or company" },
-      { icon: "", text: "Verified profiles" },
+      { icon: "", text: "Safe: block & report" },
       { icon: "", text: "Matches based on your agenda" },
       { icon: "", text: "Free to use" },
     ],
