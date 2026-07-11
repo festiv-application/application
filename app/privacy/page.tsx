@@ -44,7 +44,7 @@ export default function PrivacyPage() {
           <p style={{ fontSize: 16, color: C.textMuted, lineHeight: 1.7, maxWidth: 640 }}>
             We hebben deze verklaring duidelijk en beknopt gehouden, zodat u snel kunt vinden wat u nodig hebt. Uw vertrouwen is essentieel voor ons — geen verwarrende taal of verborgen kleine lettertjes.
           </p>
-          <p style={{ fontSize: 13, color: C.textMuted, marginTop: 16 }}>Laatst bijgewerkt: juni 2026</p>
+          <p style={{ fontSize: 13, color: C.textMuted, marginTop: 16 }}>Laatst bijgewerkt: juli 2026</p>
         </div>
 
         {/* TOC */}
@@ -65,7 +65,7 @@ export default function PrivacyPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 64 }}>
 
           <Section id="over-ons" title="1. Over ons">
-            <p>De Festiv-app wordt aangeboden door <strong>Festiv B.V.</strong>, gevestigd in Nederland. Festiv is een festival-datingplatform waarmee gebruikers mensen kunnen ontmoeten die naar dezelfde festivals en evenementen gaan.</p>
+            <p>De Festiv-app wordt aangeboden door <strong>Festiv VOF</strong>, gevestigd in Nederland. Festiv is een festival-datingplatform waarmee gebruikers mensen kunnen ontmoeten die naar dezelfde festivals en evenementen gaan.</p>
             <p>We passen de AVG (GDPR) toe als standaard voor alle gebruikers, ongeacht waar u zich bevindt.</p>
             <Table rows={[
               ["Algemene privacyvragen", "privacy@festiv.app"],
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
             <Table
               headers={["Categorie", "Voorbeelden"]}
               rows={[
-                ["Contactgegevens", "Naam, e-mailadres, telefoonnummer"],
+                ["Contactgegevens", "Naam, e-mailadres"],
                 ["Profielgegevens", "Geboortedatum, geslacht, profielfoto, bio"],
                 ["Festivalvoorkeuren", "Festivals die u bezoekt of wil bezoeken"],
                 ["Activiteit & gedrag", "Swipes, likes, matches, chatgeschiedenis"],
@@ -109,7 +109,6 @@ export default function PrivacyPage() {
                 ["Account aanmaken en beheren", "Contractuele verplichtingen"],
                 ["Profielen matchen op basis van festivalagenda", "Contractuele verplichtingen"],
                 ["Communicatie tussen matches mogelijk maken", "Contractuele verplichtingen"],
-                ["Verificatie van profielfoto's", "Toestemming"],
                 ["Versturen van app-notificaties en e-mails", "Toestemming"],
                 ["Fraudepreventie en veiligheid", "Gerechtvaardigde belangen"],
                 ["Verbetering van matchmaking en app-functionaliteit", "Gerechtvaardigde belangen"],
@@ -141,7 +140,8 @@ export default function PrivacyPage() {
           </Section>
 
           <Section id="beveiliging" title="7. Gegevensbeveiliging">
-            <p>We nemen passende technische en organisatorische maatregelen om uw gegevens te beschermen tegen verlies, misbruik of ongeoorloofde toegang. Gevoelige gegevens worden versleuteld opgeslagen en verstuurd.</p>
+            <p>We nemen passende technische en organisatorische maatregelen om uw gegevens te beschermen tegen verlies, misbruik of ongeoorloofde toegang. Gegevens worden versleuteld verstuurd (HTTPS) en opgeslagen.</p>
+            <p><strong>Chatberichten en moderatie:</strong> berichten tussen gebruikers zijn <strong>niet</strong> end-to-end versleuteld. Wanneer iemand een gesprek rapporteert, kunnen wij de betreffende berichten inzien — uitsluitend om die melding te behandelen en de veiligheid van gebruikers te waarborgen. Zo kunnen we optreden tegen ongewenst gedrag.</p>
             <p>Als u vermoedt dat uw account is gecompromitteerd, neem dan direct contact op via <strong>privacy@festiv.app</strong>.</p>
           </Section>
 

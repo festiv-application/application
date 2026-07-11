@@ -27,13 +27,13 @@ export default function TermsPage() {
           <p style={{ fontSize: 16, color: C.textMuted, lineHeight: 1.7, maxWidth: 640 }}>
             Door Festiv te gebruiken, gaat u akkoord met deze voorwaarden. Lees ze zorgvuldig door.
           </p>
-          <p style={{ fontSize: 13, color: C.textMuted, marginTop: 16 }}>Laatste update: juni 2026</p>
+          <p style={{ fontSize: 13, color: C.textMuted, marginTop: 16 }}>Laatste update: juli 2026</p>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 48, fontSize: 16, color: C.text, lineHeight: 1.75 }}>
 
           <Article title="1. Over Festiv">
-            <p>Festiv is een platform waarop gebruikers anderen kunnen ontmoeten die naar dezelfde festivals en evenementen gaan. Festiv B.V. is de aanbieder van de app en website.</p>
+            <p>Festiv is een platform waarop gebruikers anderen kunnen ontmoeten die naar dezelfde festivals en evenementen gaan. Festiv VOF is de aanbieder van de app en website.</p>
           </Article>
 
           <Article title="2. Toegang en leeftijd">
@@ -57,7 +57,7 @@ export default function TermsPage() {
           </Article>
 
           <Article title="5. Inhoud en intellectueel eigendom">
-            <p>Alle content op Festiv — waaronder logo's, teksten, ontwerpen en functionaliteit — is eigendom van Festiv B.V. of haar licentiegevers. U mag deze niet reproduceren of commercieel gebruiken zonder schriftelijke toestemming.</p>
+            <p>Alle content op Festiv — waaronder logo's, teksten, ontwerpen en functionaliteit — is eigendom van Festiv VOF of haar licentiegevers. U mag deze niet reproduceren of commercieel gebruiken zonder schriftelijke toestemming.</p>
             <p>Door content te uploaden (zoals profielfoto's) geeft u Festiv toestemming deze te gebruiken voor het leveren van de dienst.</p>
           </Article>
 
