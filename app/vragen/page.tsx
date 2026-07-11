@@ -10,7 +10,7 @@ const t = {
     items: [
       { q: "Wat is Festiv?", a: "Festiv is een app waarmee je mensen kunt ontmoeten die naar hetzelfde festival of evenement gaan als jij. Je matcht van tevoren, chat met ze, en spreekt af ter plekke." },
       { q: "Voor wie is Festiv bedoeld?", a: "Voor iedereen die naar festivals en evenementen gaat en openstaat voor nieuwe ontmoetingen — of je nu iemand romantisch zoekt, vrienden wil maken, of gewoon gezelschap wil hebben bij een podium." },
-      { q: "Is Festiv gratis?", a: "De basisfunctionaliteit is gratis. De eerste gebruikers die zich aanmelden krijgen een half jaar premium gratis — met toegang tot alle functies zonder beperkingen." },
+      { q: "Is Festiv gratis?", a: "Ja, Festiv is gratis te gebruiken. Mogelijk komen er later premiumfuncties bij, maar de basis blijft gratis." },
       { q: "Hoe werkt matchen op Festiv?", a: "Je voegt de evenementen toe waar jij naartoe gaat. Festiv laat je zien wie er ook heen gaan. Je liket mensen die je interessant vindt, en als zij jou ook liken ontstaat er een match. Dan kun je chatten en iets afspreken." },
       { q: "Mijn festival staat er niet bij, wat nu?", a: "Geen probleem — in de app kun je je festival als suggestie insturen. Wij bekijken 'm en zetten 'm erbij. Zo groeit de lijst met wat gebruikers aanvragen." },
       { q: "Wanneer is Festiv beschikbaar?", a: "We zijn hard aan het bouwen. Meld je aan voor de wachtlijst en je bent als eerste op de hoogte wanneer de app live gaat." },
@@ -22,7 +22,7 @@ const t = {
     items: [
       { q: "What is Festiv?", a: "Festiv is an app that lets you meet people going to the same festival or event as you. You match in advance, chat with them, and meet up on the day." },
       { q: "Who is Festiv for?", a: "For anyone who goes to festivals and events and is open to new connections — whether you're looking for something romantic, new friends, or just good company at a stage." },
-      { q: "Is Festiv free?", a: "The basic functionality is free. The first users to sign up get six months of premium for free — with access to all features without limits." },
+      { q: "Is Festiv free?", a: "Yes, Festiv is free to use. We may add premium features later, but the basics stay free." },
       { q: "How does matching work on Festiv?", a: "You add the events you're going to. Festiv shows you who else is going. You like people you find interesting, and if they like you back it's a match. Then you can chat and make plans." },
       { q: "My festival isn't listed, what now?", a: "No problem — in the app you can submit your festival as a suggestion. We review it and add it. That's how the list grows, based on what users request." },
       { q: "When will Festiv be available?", a: "We're building hard. Sign up for the waitlist and you'll be the first to know when the app goes live." },
