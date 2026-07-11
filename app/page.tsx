@@ -145,7 +145,7 @@ const translations = {
       { q: "Voor wie is Festiv bedoeld?", a: "Voor iedereen die naar festivals en evenementen gaat — of je nu iemand romantisch zoekt, vrienden wil maken, of gewoon gezelschap wil bij een podium." },
       { q: "Is Festiv gratis?", a: "De basisfunctionaliteit is gratis. De eerste gebruikers die zich aanmelden krijgen een half jaar premium gratis." },
       { q: "Wanneer is Festiv beschikbaar?", a: "We zijn hard aan het bouwen. Meld je aan voor de wachtlijst en je bent als eerste op de hoogte." },
-      { q: "Mijn festival staat er niet bij, wat nu?", a: "Stuur ons een bericht via de contactpagina en we voegen het toe." },
+      { q: "Mijn festival staat er niet bij, wat nu?", a: "Geen probleem — in de app kun je je festival als suggestie insturen. Wij bekijken 'm en zetten 'm erbij." },
     ],
     footerLinks: [
       { label: "Over ons", href: "/over-ons" },
@@ -198,7 +198,7 @@ const translations = {
       { q: "Who is Festiv for?", a: "For anyone who goes to festivals and events — whether you're looking for something romantic, new friends, or just good company at a stage." },
       { q: "Is Festiv free?", a: "The basic functionality is free. The first users to sign up get six months of premium for free." },
       { q: "When will Festiv be available?", a: "We're building hard. Sign up for the waitlist and you'll be the first to know." },
-      { q: "My festival isn't listed, what now?", a: "Send us a message via the contact page and we'll add it." },
+      { q: "My festival isn't listed, what now?", a: "No problem — in the app you can submit your festival as a suggestion. We review it and add it." },
     ],
     footerLinks: [
       { label: "About us", href: "/over-ons" },

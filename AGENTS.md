@@ -13,4 +13,4 @@ De privacyverklaring en gebruiksvoorwaarden zijn **juridische documenten**, geen
 - **Voorstellen, niet stilletjes doorvoeren.** Draag een concrete wijziging aan en laat een mens (Gijs/Mark) die goedkeuren vóór publicatie. Vóór de echte launch: door iemand met juridische kennis laten nakijken.
 - **Alleen claimen wat écht gebouwd is.** Zet nooit een feature (zoals telefoonverificatie) in de tekst voordat die live is — over-claimen is een App Store- én AVG-risico. Verwijder claims van features die je weghaalt.
 - **Houd de tracker in sync:** `festiv-app/docs/JURIDISCHE-CLAIMS.md` houdt claim ↔ status bij; werk die in dezelfde wijziging bij.
-- De rechtsvorm is **Festiv VOF** (geen B.V.).
+- De rechtsvorm is **Festiv VoF** (geen B.V.).
