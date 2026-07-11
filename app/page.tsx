@@ -128,8 +128,8 @@ const translations = {
       { icon: "", text: "Gratis te gebruiken" },
     ],
     statsItems: [
-      { num: "500+", label: "aanmeldingen" },
-      { num: "50+", label: "festivals in de app" },
+      { num: "Groeiend", label: "festival-aanbod" },
+      { num: "Vooraf", label: "matchen, ter plekke afspreken" },
       { num: "2026", label: "live" },
     ],
     ctaTitle: "Wees er als eerste bij.",
@@ -181,8 +181,8 @@ const translations = {
       { icon: "", text: "Free to use" },
     ],
     statsItems: [
-      { num: "500+", label: "sign-ups" },
-      { num: "50+", label: "festivals in the app" },
+      { num: "Growing", label: "festival line-up" },
+      { num: "Upfront", label: "match, then meet on the day" },
       { num: "2026", label: "going live" },
     ],
     ctaTitle: "Be the first.",
