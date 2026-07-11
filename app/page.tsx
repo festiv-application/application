@@ -322,7 +322,7 @@ export default function Home() {
             </a>
           ))}
           <button
-            onClick={() => setLang(lang === "nl" ? "en" : "nl")}
+            onClick={() => setLang()}
             style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(252,244,236,0.55)", fontSize: 13, fontWeight: 500, padding: 0 }}>
             {lang === "nl" ? "EN" : "NL"}
           </button>
